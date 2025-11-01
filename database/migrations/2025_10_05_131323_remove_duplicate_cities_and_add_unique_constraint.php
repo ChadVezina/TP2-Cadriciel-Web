@@ -38,10 +38,13 @@ return new class extends Migration
                 ->delete();
         }
 
-        // Now add the unique constraint
-        Schema::table('villes', function (Blueprint $table) {
-            $table->unique('name');
-        });
+        // Now add the unique constraint if it doesn't already exist
+        $existing = DB::select("SHOW INDEX FROM `villes` WHERE Key_name = 'villes_name_unique'");
+        if (empty($existing)) {
+            Schema::table('villes', function (Blueprint $table) {
+                $table->unique('name');
+            });
+        }
     }
 
     /**
@@ -49,9 +52,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Remove the unique constraint
-        Schema::table('villes', function (Blueprint $table) {
-            $table->dropUnique(['name']);
-        });
+        // Remove the unique constraint if it exists
+        $existing = DB::select("SHOW INDEX FROM `villes` WHERE Key_name = 'villes_name_unique'");
+        if (!empty($existing)) {
+            Schema::table('villes', function (Blueprint $table) {
+                $table->dropUnique(['name']);
+            });
+        }
     }
 };
