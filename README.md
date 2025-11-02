@@ -108,6 +108,8 @@ php artisan make:seeder EtudiantSeeder
 
 # Contrôleur REST
 php artisan make:controller EtudiantController --resource
+php artisan make:controller AuthController -r
+php artisan make:controller UserController -m User
 ```
 
 ---

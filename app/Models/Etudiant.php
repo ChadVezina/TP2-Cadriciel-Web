@@ -15,10 +15,16 @@ class Etudiant extends Model
         'email',
         'birthdate',
         'city_id',
+        'user_id',
     ];
 
     public function city()
     {
         return $this->belongsTo(Ville::class, 'city_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -28,44 +28,44 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="nom" class="form-label fw-semibold">Nom complet</label>
+                        <label for="name" class="form-label fw-semibold">Nom complet</label>
                         <input type="text"
-                            class="form-control @error('nom') is-invalid @enderror"
-                            id="nom"
-                            name="nom"
-                            value="{{ old('nom') }}"
+                            class="form-control @error('name') is-invalid @enderror"
+                            id="name"
+                            name="name"
+                            value="{{ old('name') }}"
                             placeholder="Entrez le nom complet"
                             required>
-                        @error('nom')
+                        @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="adresse" class="form-label fw-semibold">Adresse</label>
+                        <label for="address" class="form-label fw-semibold">Adresse</label>
                         <input type="text"
-                            class="form-control @error('adresse') is-invalid @enderror"
-                            id="adresse"
-                            name="adresse"
-                            value="{{ old('adresse') }}"
+                            class="form-control @error('address') is-invalid @enderror"
+                            id="address"
+                            name="address"
+                            value="{{ old('address') }}"
                             placeholder="Entrez l'adresse"
                             required>
-                        @error('adresse')
+                        @error('address')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="telephone" class="form-label fw-semibold">Téléphone</label>
+                            <label for="phone" class="form-label fw-semibold">Téléphone</label>
                             <input type="text"
-                                class="form-control @error('telephone') is-invalid @enderror"
-                                id="telephone"
-                                name="telephone"
-                                value="{{ old('telephone') }}"
+                                class="form-control @error('phone') is-invalid @enderror"
+                                id="phone"
+                                name="phone"
+                                value="{{ old('phone') }}"
                                 placeholder="(555) 123-4567"
                                 required>
-                            @error('telephone')
+                            @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -87,31 +87,32 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="date_naissance" class="form-label fw-semibold">Date de naissance</label>
+                            <label for="birthdate" class="form-label fw-semibold">Date de naissance</label>
                             <input type="date"
-                                class="form-control @error('date_naissance') is-invalid @enderror"
-                                id="date_naissance"
-                                name="date_naissance"
-                                value="{{ old('date_naissance') }}">
-                            @error('date_naissance')
+                                class="form-control @error('birthdate') is-invalid @enderror"
+                                id="birthdate"
+                                name="birthdate"
+                                value="{{ old('birthdate') }}"
+                                required>
+                            @error('birthdate')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="ville_id" class="form-label fw-semibold">Ville</label>
-                            <select class="form-select @error('ville_id') is-invalid @enderror"
-                                id="ville_id"
-                                name="ville_id"
+                            <label for="city_id" class="form-label fw-semibold">Ville</label>
+                            <select class="form-select @error('city_id') is-invalid @enderror"
+                                id="city_id"
+                                name="city_id"
                                 required>
                                 <option value="">Sélectionnez une ville</option>
                                 @foreach ($cities as $city)
-                                <option value="{{ $city->id }}" {{ old('ville_id') == $city->id ? 'selected' : '' }}>
+                                <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>
                                     {{ $city->name }}
                                 </option>
                                 @endforeach
                             </select>
-                            @error('ville_id')
+                            @error('city_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

@@ -39,6 +39,9 @@ class EtudiantController extends Controller
             'birthdate' => 'required|date',
             'city_id' => 'required|exists:villes,id',
         ]);
+        // associate the student with the currently authenticated user
+        // assume authentication is required for this controller/route
+        $validatedData['user_id'] = auth()->id();
 
         $student = Etudiant::create($validatedData);
         return redirect()->route('etudiants.index')->with('success', 'Étudiant créé avec succès.');

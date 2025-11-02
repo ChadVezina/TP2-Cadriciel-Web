@@ -13,7 +13,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             VilleSeeder::class,
+            // Create students (each student will create their own user account)
             EtudiantSeeder::class,
+            // Create additional non-student users (admins, professors, etc.)
+            UserSeeder::class,
         ]);
     }
 }
