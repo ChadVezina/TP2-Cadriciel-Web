@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Etudiant;
 use App\Models\Ville;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class EtudiantController extends Controller
 {
@@ -39,9 +41,20 @@ class EtudiantController extends Controller
             'birthdate' => 'required|date',
             'city_id' => 'required|exists:villes,id',
         ]);
-        // associate the student with the currently authenticated user
-        // assume authentication is required for this controller/route
-        $validatedData['user_id'] = auth()->id();
+        // Try to associate the student with an existing user matching the
+        // email provided in the form. If no user exists, leave the relation null
+        // (the migration allows nullable user_id).
+            // Find or create a user matching the provided email. If no user exists,
+            // create one using the provided name and a random password.
+            $user = User::firstOrCreate(
+                ['email' => $validatedData['email']],
+                [
+                    'name' => $validatedData['name'],
+                    // use Str::random for a temporary password; User model casts 'password' => 'hashed'
+                    'password' => Str::random(12),
+                ]
+            );
+            $validatedData['user_id'] = $user->id;
 
         $student = Etudiant::create($validatedData);
         return redirect()->route('etudiants.index')->with('success', 'Étudiant créé avec succès.');
@@ -78,6 +91,17 @@ class EtudiantController extends Controller
             'birthdate' => 'required|date',
             'city_id' => 'required|exists:villes,id',
         ]);
+
+        // Keep user association consistent with the provided email.
+            // On update, ensure the user association follows the (possibly new) email.
+            $user = User::firstOrCreate(
+                ['email' => $validatedData['email']],
+                [
+                    'name' => $validatedData['name'],
+                    'password' => Str::random(12),
+                ]
+            );
+            $validatedData['user_id'] = $user->id;
 
         $etudiant->update($validatedData);
         return redirect()->route('etudiants.index')->with('success', 'Étudiant mis à jour avec succès.');
