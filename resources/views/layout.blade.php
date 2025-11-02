@@ -22,12 +22,12 @@
                     @auth
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('etudiants.index') }}">
-                                <i class="bi bi-people-fill"></i> Liste des étudiants
+                                <i class="bi bi-people-fill"></i> {{ __('Students List') }}
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('etudiants.create') }}">
-                                <i class="bi bi-person-plus-fill"></i> Nouvel étudiant
+                                <i class="bi bi-person-plus-fill"></i> {{ __('New Student') }}
                             </a>
                         </li>
                         <li class="nav-item dropdown">
@@ -37,7 +37,7 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li>
                                     <a class="dropdown-item" href="{{ route('users.index') }}">
-                                        <i class="bi bi-people"></i> Gérer les utilisateurs
+                                        <i class="bi bi-people"></i> {{ __('Manage Users') }}
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -46,7 +46,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right"></i> Se déconnecter
+                                            <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
                                         </button>
                                     </form>
                                 </li>
@@ -55,15 +55,31 @@
                     @else
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('login') }}">
-                                <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                                <i class="bi bi-box-arrow-in-right"></i> {{ __('Login') }}
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('registration') }}">
-                                <i class="bi bi-person-plus"></i> S'inscrire
+                                <i class="bi bi-person-plus"></i> {{ __('Register') }}
                             </a>
                         </li>
                     @endauth
+                    <!-- Language Switcher -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-translate"></i> {{ strtoupper(app()->getLocale()) }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            @foreach(config('app.available_locales') as $locale => $name)
+                                <li>
+                                    <a class="dropdown-item {{ app()->getLocale() == $locale ? 'active' : '' }}"
+                                       href="{{ route('locale.change', $locale) }}">
+                                        {{ $name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

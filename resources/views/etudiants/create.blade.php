@@ -1,18 +1,18 @@
 @extends('layout')
 
-@section('title', 'Nouvel Étudiant')
+@section('title', __('New Student'))
 
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="mb-4">
-            <h1 class="page-title">Ajouter un nouvel étudiant</h1>
-            <p class="text-muted">Remplissez les informations de l'étudiant</p>
+            <h1 class="page-title">{{ __('Add a new student') }}</h1>
+            <p class="text-muted">{{ __('Fill in the student information') }}</p>
         </div>
 
         @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Erreur de validation :</strong>
+            <strong>{{ __('Validation error:') }}</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -28,13 +28,13 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="name" class="form-label fw-semibold">Nom complet</label>
+                        <label for="name" class="form-label fw-semibold">{{ __('Full Name') }}</label>
                         <input type="text"
                             class="form-control @error('name') is-invalid @enderror"
                             id="name"
                             name="name"
                             value="{{ old('name') }}"
-                            placeholder="Entrez le nom complet"
+                            placeholder="{{ __('Enter full name') }}"
                             required>
                         @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -42,13 +42,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="address" class="form-label fw-semibold">Adresse</label>
+                        <label for="address" class="form-label fw-semibold">{{ __('Address') }}</label>
                         <input type="text"
                             class="form-control @error('address') is-invalid @enderror"
                             id="address"
                             name="address"
                             value="{{ old('address') }}"
-                            placeholder="Entrez l'adresse"
+                            placeholder="{{ __('Enter address') }}"
                             required>
                         @error('address')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -57,7 +57,7 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label fw-semibold">Téléphone</label>
+                            <label for="phone" class="form-label fw-semibold">{{ __('Phone') }}</label>
                             <input type="text"
                                 class="form-control @error('phone') is-invalid @enderror"
                                 id="phone"
@@ -71,13 +71,13 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label fw-semibold">Email</label>
+                            <label for="email" class="form-label fw-semibold">{{ __('Email') }}</label>
                             <input type="email"
                                 class="form-control @error('email') is-invalid @enderror"
                                 id="email"
                                 name="email"
                                 value="{{ old('email') }}"
-                                placeholder="exemple@email.com"
+                                placeholder="{{ __('Enter email') }}"
                                 required>
                             @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -87,7 +87,7 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="birthdate" class="form-label fw-semibold">Date de naissance</label>
+                            <label for="birthdate" class="form-label fw-semibold">{{ __('Date of Birth') }}</label>
                             <input type="date"
                                 class="form-control @error('birthdate') is-invalid @enderror"
                                 id="birthdate"
@@ -100,12 +100,12 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="city_id" class="form-label fw-semibold">Ville</label>
+                            <label for="city_id" class="form-label fw-semibold">{{ __('City') }}</label>
                             <select class="form-select @error('city_id') is-invalid @enderror"
                                 id="city_id"
                                 name="city_id"
                                 required>
-                                <option value="">Sélectionnez une ville</option>
+                                <option value="">{{ __('Select a city') }}</option>
                                 @foreach ($cities as $city)
                                 <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>
                                     {{ $city->name }}
@@ -119,8 +119,8 @@
                     </div>
 
                     <div class="d-flex gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                        <a href="{{ route('etudiants.index') }}" class="btn btn-light">Annuler</a>
+                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                        <a href="{{ route('etudiants.index') }}" class="btn btn-light">{{ __('Cancel') }}</a>
                     </div>
                 </form>
             </div>

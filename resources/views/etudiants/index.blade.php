@@ -1,12 +1,12 @@
 @extends('layout')
 
-@section('title', 'Liste des étudiants')
+@section('title', __('Students List'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="page-title mb-0">Liste des étudiants</h1>
+    <h1 class="page-title mb-0">{{ __('Students List') }}</h1>
     <a href="{{ route('etudiants.create') }}" class="btn btn-primary">
-        + Ajouter un étudiant
+        + {{ __('Add Student') }}
     </a>
 </div>
 
@@ -23,10 +23,10 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="py-3 px-4">Nom</th>
-                        <th class="py-3 px-4">Email</th>
-                        <th class="py-3 px-4">Ville</th>
-                        <th class="py-3 px-4 text-end">Actions</th>
+                        <th class="py-3 px-4">{{ __('Name') }}</th>
+                        <th class="py-3 px-4">{{ __('Email') }}</th>
+                        <th class="py-3 px-4">{{ __('City') }}</th>
+                        <th class="py-3 px-4 text-end">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,19 +38,19 @@
                         <td class="py-3 px-4 text-end">
                             <a href="{{ route('etudiants.show', $student->id) }}"
                                 class="btn btn-sm btn-outline-primary">
-                                Voir
+                                {{ __('View') }}
                             </a>
                             <a href="{{ route('etudiants.edit', $student->id) }}"
                                 class="btn btn-sm btn-outline-secondary">
-                                Modifier
+                                {{ __('Edit') }}
                             </a>
                             <form class="d-inline" action="{{ route('etudiants.destroy', $student->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?');"
+                                <button onclick="return confirm('{{ __('Are you sure you want to delete this student?') }}');"
                                     type="submit"
                                     class="btn btn-sm btn-outline-danger">
-                                    Supprimer
+                                    {{ __('Delete') }}
                                 </button>
                             </form>
                         </td>
@@ -58,7 +58,7 @@
                     @empty
                     <tr>
                         <td colspan="4" class="text-center py-5 text-muted">
-                            Aucun étudiant trouvé
+                            {{ __('No students found') }}
                         </td>
                     </tr>
                     @endforelse

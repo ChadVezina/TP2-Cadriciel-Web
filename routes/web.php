@@ -4,8 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LocaleController;
 
 Route::get('/', [EtudiantController::class, 'index'])->name('home');
+
+// Language switcher route
+Route::get('/locale/{locale}', [LocaleController::class, 'change'])->name('locale.change');
 
 // Protected routes - require authentication
 Route::middleware('auth')->group(function () {

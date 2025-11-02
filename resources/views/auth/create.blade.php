@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', 'Connexion')
+@section('title', __('Login'))
 @section('content')
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -23,18 +23,17 @@
         <div class="col-md-5">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">Connexion</h4>
+                    <h4 class="card-title mb-0">{{ __('Login') }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('auth.store') }}">
                         @csrf
-                        
                         <div class="mb-3">
-                            <label for="email" class="form-label">Adresse email</label>
-                            <input type="email" 
-                                   class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" 
-                                   name="email" 
+                            <label for="email" class="form-label">{{ __('Email Address') }}</label>
+                            <input type="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   id="email"
+                                   name="email"
                                    value="{{ old('email') }}"
                                    required
                                    autofocus>
@@ -44,10 +43,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Mot de passe</label>
-                            <input type="password" 
-                                   class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" 
+                            <label for="password" class="form-label">{{ __('Password') }}</label>
+                            <input type="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   id="password"
                                    name="password"
                                    required>
                             @error('password')
@@ -58,20 +57,20 @@
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="remember" name="remember">
                             <label class="form-check-label" for="remember">
-                                Se souvenir de moi
+                                {{ __('Remember Me') }}
                             </label>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Se connecter</button>
+                            <button type="submit" class="btn btn-primary">{{ __('Login') }}</button>
                         </div>
                     </form>
 
                     <hr class="my-4">
 
                     <div class="text-center">
-                        <p class="mb-0">Vous n'avez pas de compte? 
-                            <a href="{{ route('registration') }}" class="text-decoration-none">S'inscrire</a>
+                        <p class="mb-0">{{ __("Don't have an account?") }}
+                            <a href="{{ route('registration') }}" class="text-decoration-none">{{ __('Register') }}</a>
                         </p>
                     </div>
                 </div>

@@ -1,12 +1,12 @@
 @extends('layout')
-@section('title', 'Détails de l\'utilisateur')
+@section('title', __('User Details'))
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="bi bi-person-circle"></i> Détails de l'utilisateur</h2>
+                <h2><i class="bi bi-person-circle"></i> {{ __('User Details') }}</h2>
                 <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Retour
+                    <i class="bi bi-arrow-left"></i> {{ __('Back') }}
                 </a>
             </div>
 
@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>ID:</strong>
+                            <strong>{{ __('ID:') }}</strong>
                         </div>
                         <div class="col-md-8">
                             {{ $user->id }}
@@ -26,7 +26,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Nom:</strong>
+                            <strong>{{ __('Name:') }}</strong>
                         </div>
                         <div class="col-md-8">
                             {{ $user->name }}
@@ -35,7 +35,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Email:</strong>
+                            <strong>{{ __('Email:') }}</strong>
                         </div>
                         <div class="col-md-8">
                             {{ $user->email }}
@@ -44,7 +44,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Date de création:</strong>
+                            <strong>{{ __('Creation Date:') }}</strong>
                         </div>
                         <div class="col-md-8">
                             {{ $user->created_at->format('d/m/Y H:i') }}
@@ -53,7 +53,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <strong>Dernière modification:</strong>
+                            <strong>{{ __('Last Modified:') }}</strong>
                         </div>
                         <div class="col-md-8">
                             {{ $user->updated_at->format('d/m/Y H:i') }}
@@ -63,14 +63,14 @@
                 <div class="card-footer">
                     <div class="d-flex gap-2">
                         <a href="{{ route('users.edit', $user) }}" class="btn btn-warning">
-                            <i class="bi bi-pencil"></i> Modifier
+                            <i class="bi bi-pencil"></i> {{ __('Edit') }}
                         </a>
                         <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger"
-                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">
-                                <i class="bi bi-trash"></i> Supprimer
+                                    onclick="return confirm('{{ __('Are you sure you want to delete this user?') }}')">
+                                <i class="bi bi-trash"></i> {{ __('Delete') }}
                             </button>
                         </form>
                     </div>

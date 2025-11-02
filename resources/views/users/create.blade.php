@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', 'Inscription')
+@section('title', __('Registration'))
 @section('content')
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -23,18 +23,17 @@
         <div class="col-md-6">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">Créer un compte</h4>
+                    <h4 class="card-title mb-0">{{ __('Create an account') }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('users.store') }}">
                         @csrf
-                        
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nom complet <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" 
-                                   name="name" 
+                            <label for="name" class="form-label">{{ __('Full Name') }} <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control @error('name') is-invalid @enderror"
+                                   id="name"
+                                   name="name"
                                    value="{{ old('name') }}"
                                    required>
                             @error('name')
@@ -43,11 +42,11 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Adresse email <span class="text-danger">*</span></label>
-                            <input type="email" 
-                                   class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" 
-                                   name="email" 
+                            <label for="email" class="form-label">{{ __('Email Address') }} <span class="text-danger">*</span></label>
+                            <input type="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   id="email"
+                                   name="email"
                                    value="{{ old('email') }}"
                                    required>
                             @error('email')
@@ -56,14 +55,14 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
-                            <input type="password" 
-                                   class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" 
+                            <label for="password" class="form-label">{{ __('Password') }} <span class="text-danger">*</span></label>
+                            <input type="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   id="password"
                                    name="password"
                                    required>
                             <small class="form-text text-muted">
-                                Le mot de passe doit contenir entre 6 et 20 caractères.
+                                {{ __('The password must contain between 6 and 20 characters.') }}
                             </small>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -71,24 +70,24 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="password_confirmation" 
+                            <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }} <span class="text-danger">*</span></label>
+                            <input type="password"
+                                   class="form-control @error('password_confirmation') is-invalid @enderror"
+                                   id="password_confirmation"
                                    name="password_confirmation"
                                    required>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">S'inscrire</button>
+                            <button type="submit" class="btn btn-primary">{{ __('Register') }}</button>
                         </div>
                     </form>
 
                     <hr class="my-4">
 
                     <div class="text-center">
-                        <p class="mb-0">Vous avez déjà un compte? 
-                            <a href="{{ route('login') }}" class="text-decoration-none">Se connecter</a>
+                        <p class="mb-0">{{ __('Already have an account?') }}
+                            <a href="{{ route('login') }}" class="text-decoration-none">{{ __('Login') }}</a>
                         </p>
                     </div>
                 </div>

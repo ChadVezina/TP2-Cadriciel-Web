@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', 'Liste des utilisateurs')
+@section('title', __('Users List'))
 @section('content')
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -9,9 +9,9 @@
     @endif
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-people"></i> Liste des utilisateurs</h2>
+        <h2><i class="bi bi-people"></i> {{ __('Users List') }}</h2>
         <a href="{{ route('users.create') }}" class="btn btn-primary">
-            <i class="bi bi-person-plus"></i> Nouvel utilisateur
+            <i class="bi bi-person-plus"></i> {{ __('New User') }}
         </a>
     </div>
 
@@ -23,10 +23,10 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Nom</th>
-                                <th>Email</th>
-                                <th>Date de création</th>
-                                <th>Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Email') }}</th>
+                                <th>{{ __('Creation Date') }}</th>
+                                <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,17 +37,17 @@
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                 <td>
-                                    <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-info" title="Voir">
+                                    <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-info" title="{{ __('View') }}">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning" title="Modifier">
+                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning" title="{{ __('Edit') }}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Supprimer"
-                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="{{ __('Delete') }}"
+                                                onclick="return confirm('{{ __('Are you sure you want to delete this user?') }}')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -58,7 +58,7 @@
                     </table>
                 </div>
             @else
-                <p class="text-muted text-center py-4">Aucun utilisateur trouvé.</p>
+                <p class="text-muted text-center py-4">{{ __('No users found.') }}</p>
             @endif
         </div>
     </div>
