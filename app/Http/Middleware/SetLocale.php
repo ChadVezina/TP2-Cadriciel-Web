@@ -17,17 +17,16 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if locale is stored in session
-        if (Session::has('locale')) {
-            $locale = Session::get('locale');
-        } else {
-            // Use default locale from config
-            $locale = config('app.locale');
-        }
+        // Get locale from session, or use default
+        $locale = Session::get('locale', config('app.locale', 'fr'));
 
         // Validate locale is supported
-        if (array_key_exists($locale, config('app.available_locales'))) {
+        $availableLocales = config('app.available_locales', ['fr' => 'Français', 'en' => 'English']);
+        if (array_key_exists($locale, $availableLocales)) {
             App::setLocale($locale);
+        } else {
+            // Fallback to default locale if invalid locale in session
+            App::setLocale(config('app.locale', 'fr'));
         }
 
         return $next($request);

@@ -70,4 +70,11 @@
     "Email:": "Email:",
     "Creation Date:": "Date de création:",
     "Last Modified:": "Dernière modification:"
+    ,"Search name...": "Rechercher par nom...",
+    "Name order": "Tri par nom",
+    "City order": "Tri par ville",
+    "A → Z": "A → Z",
+    "Z → A": "Z → A",
+    "Apply": "Appliquer",
+    "Reset": "Réinitialiser"
 }

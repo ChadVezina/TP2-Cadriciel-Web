@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Ensure SetLocale runs after the session middleware so Session is available
+        // Append it to the web middleware stack (default behavior)
         $middleware->web(append: [
             SetLocale::class,
         ]);

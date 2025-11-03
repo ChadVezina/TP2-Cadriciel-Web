@@ -13,9 +13,49 @@ class EtudiantController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * Display a listing of the resource with optional search, ordering and pagination.
+     *
+     * Query params supported:
+     * - search: string to match against student name (LIKE)
+     * - per_page: integer (10..100) items per page
+     * - name_order: 'asc' or 'desc' to order by name
+     * - city_order: 'asc' or 'desc' to order by city name
+     */
     public function index()
     {
-        $students = Etudiant::with('city')->orderBy('name')->get();
+        $request = request();
+
+        // pagination size (bounded 10..100)
+        $perPage = (int) $request->query('per_page', 10);
+        if ($perPage < 10) $perPage = 10;
+        if ($perPage > 100) $perPage = 100;
+
+        $search = $request->query('search');
+        $nameOrder = $request->query('name_order'); // 'asc'|'desc'|null
+        $cityOrder = $request->query('city_order'); // 'asc'|'desc'|null
+
+        $query = Etudiant::with('city')
+            ->select('etudiants.*');
+
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // if requested, order by name
+        if (in_array($nameOrder, ['asc', 'desc'])) {
+            $query->orderBy('name', $nameOrder);
+        }
+
+        // if requested, join cities and order by city name
+        if (in_array($cityOrder, ['asc', 'desc'])) {
+            $query->leftJoin('villes', 'villes.id', '=', 'etudiants.city_id')
+                  ->orderBy('villes.name', $cityOrder)
+                  ->select('etudiants.*');
+        }
+
+        $students = $query->paginate($perPage)->appends($request->query());
+
         return view('etudiants.index', compact('students'));
     }
 
