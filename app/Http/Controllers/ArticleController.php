@@ -11,10 +11,11 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::with('user')->latest()->paginate(10);
-        return view('articles.index', compact('articles'));
+        $articles = Article::with(['user', 'translations'])->latest()->paginate(10);
+        $viewLocale = $request->session()->get('article_view_locale', app()->getLocale());
+        return view('articles.index', compact('articles', 'viewLocale'));
     }
 
     /**
@@ -31,14 +32,33 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title_fr' => 'required|string|max:255',
+            'content_fr' => 'required|string',
+            'title_en' => 'required|string|max:255',
+            'content_en' => 'required|string',
             'language' => 'required|in:fr,en',
         ]);
 
-        $validated['user_id'] = Auth::id();
+        // Create the article with the primary language content
+        $article = Article::create([
+            'title' => $validated['title_' . $validated['language']],
+            'content' => $validated['content_' . $validated['language']],
+            'language' => $validated['language'],
+            'user_id' => Auth::id(),
+        ]);
 
-        Article::create($validated);
+        // Save translations for both languages
+        $article->translations()->create([
+            'locale' => 'fr',
+            'title' => $validated['title_fr'],
+            'content' => $validated['content_fr'],
+        ]);
+
+        $article->translations()->create([
+            'locale' => 'en',
+            'title' => $validated['title_en'],
+            'content' => $validated['content_en'],
+        ]);
 
         return redirect()->route('articles.index')
             ->with('success', __('Article créé avec succès.'));
@@ -47,9 +67,11 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Article $article)
+    public function show(Request $request, Article $article)
     {
-        return view('articles.show', compact('article'));
+        $article->load('translations');
+        $viewLocale = $request->session()->get('article_view_locale', app()->getLocale());
+        return view('articles.show', compact('article', 'viewLocale'));
     }
 
     /**
@@ -62,6 +84,7 @@ class ArticleController extends Controller
             abort(403, __('Vous n\'êtes pas autorisé à modifier cet article.'));
         }
 
+        $article->load('translations');
         return view('articles.edit', compact('article'));
     }
 
@@ -76,12 +99,36 @@ class ArticleController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title_fr' => 'required|string|max:255',
+            'content_fr' => 'required|string',
+            'title_en' => 'required|string|max:255',
+            'content_en' => 'required|string',
             'language' => 'required|in:fr,en',
         ]);
 
-        $article->update($validated);
+        // Update the article with the primary language content
+        $article->update([
+            'title' => $validated['title_' . $validated['language']],
+            'content' => $validated['content_' . $validated['language']],
+            'language' => $validated['language'],
+        ]);
+
+        // Update or create translations for both languages
+        $article->translations()->updateOrCreate(
+            ['locale' => 'fr'],
+            [
+                'title' => $validated['title_fr'],
+                'content' => $validated['content_fr'],
+            ]
+        );
+
+        $article->translations()->updateOrCreate(
+            ['locale' => 'en'],
+            [
+                'title' => $validated['title_en'],
+                'content' => $validated['content_en'],
+            ]
+        );
 
         return redirect()->route('articles.index')
             ->with('success', __('Article modifié avec succès.'));
@@ -101,5 +148,22 @@ class ArticleController extends Controller
 
         return redirect()->route('articles.index')
             ->with('success', __('Article supprimé avec succès.'));
+    }
+
+    /**
+     * Change the view locale for articles (independent from app locale)
+     */
+    public function changeViewLocale(Request $request, string $locale)
+    {
+        // Validate that the locale is supported
+        if (!in_array($locale, ['fr', 'en'])) {
+            abort(400, 'Locale not supported');
+        }
+
+        // Store article view locale in session
+        $request->session()->put('article_view_locale', $locale);
+
+        // Redirect back to previous page
+        return redirect()->back();
     }
 }

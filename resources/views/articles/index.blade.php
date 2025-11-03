@@ -7,9 +7,22 @@
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="bi bi-chat-left-text"></i> {{ __('Forum') }}</h1>
-            <a href="{{ route('articles.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> {{ __('Nouvel Article') }}
-            </a>
+            <div class="d-flex gap-2">
+                <!-- Language Toggle Buttons for Articles -->
+                <div class="btn-group" role="group">
+                    <a href="{{ route('articles.viewlocale.change', 'fr') }}" 
+                       class="btn btn-sm {{ $viewLocale == 'fr' ? 'btn-primary' : 'btn-outline-primary' }}">
+                        <i class="bi bi-translate"></i> {{ __('FR') }}
+                    </a>
+                    <a href="{{ route('articles.viewlocale.change', 'en') }}" 
+                       class="btn btn-sm {{ $viewLocale == 'en' ? 'btn-primary' : 'btn-outline-primary' }}">
+                        <i class="bi bi-translate"></i> {{ __('EN') }}
+                    </a>
+                </div>
+                <a href="{{ route('articles.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> {{ __('Nouvel Article') }}
+                </a>
+            </div>
         </div>
 
         @if(session('success'))
@@ -31,9 +44,18 @@
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <a href="{{ route('articles.show', $article) }}" class="text-decoration-none">
-                                        {{ $article->title }}
+                                        {{ $article->getTitleIn($viewLocale) }}
                                     </a>
                                     <span class="badge bg-secondary ms-2">{{ strtoupper($article->language) }}</span>
+                                    @if($article->isFullyTranslated())
+                                        <span class="badge bg-success ms-1">
+                                            <i class="bi bi-check-circle"></i> {{ __('Traduit') }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning text-dark ms-1">
+                                            <i class="bi bi-exclamation-circle"></i> {{ __('Non traduit') }}
+                                        </span>
+                                    @endif
                                 </h5>
                                 <small class="text-muted">
                                     <i class="bi bi-person"></i> {{ $article->user->name }} |
@@ -41,7 +63,7 @@
                                 </small>
                             </div>
                             <div class="card-body">
-                                <p class="card-text">{{ Str::limit($article->content, 200) }}</p>
+                                <p class="card-text">{{ Str::limit($article->getContentIn($viewLocale), 200) }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <a href="{{ route('articles.show', $article) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> {{ __('Lire la suite') }}

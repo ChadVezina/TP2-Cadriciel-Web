@@ -1,15 +1,26 @@
 @extends('layout')
 
-@section('title', $article->title)
+@section('title', $article->getTitleIn($viewLocale))
 
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-10">
         <div class="card">
             <div class="card-header">
-                <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <h2 class="mb-2">{{ $article->title }}</h2>
+                        <h2 class="mb-2">
+                            {{ $article->getTitleIn($viewLocale) }}
+                            @if($article->isFullyTranslated())
+                                <span class="badge bg-success ms-2">
+                                    <i class="bi bi-check-circle"></i> {{ __('Traduit') }}
+                                </span>
+                            @else
+                                <span class="badge bg-warning text-dark ms-2">
+                                    <i class="bi bi-exclamation-circle"></i> {{ __('Non traduit') }}
+                                </span>
+                            @endif
+                        </h2>
                         <p class="text-muted mb-0">
                             <i class="bi bi-person"></i> {{ $article->user->name }} |
                             <i class="bi bi-calendar"></i> {{ $article->created_at->format('d/m/Y H:i') }}
@@ -35,10 +46,23 @@
                         </div>
                     @endif
                 </div>
+                <!-- Language Toggle Buttons for Article -->
+                <div class="d-flex justify-content-center">
+                    <div class="btn-group" role="group">
+                        <a href="{{ route('articles.viewlocale.change', 'fr') }}" 
+                           class="btn btn-sm {{ $viewLocale == 'fr' ? 'btn-primary' : 'btn-outline-primary' }}">
+                            <i class="bi bi-translate"></i> {{ __('Voir en Français') }}
+                        </a>
+                        <a href="{{ route('articles.viewlocale.change', 'en') }}" 
+                           class="btn btn-sm {{ $viewLocale == 'en' ? 'btn-primary' : 'btn-outline-primary' }}">
+                            <i class="bi bi-translate"></i> {{ __('Voir en Anglais') }}
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="article-content">
-                    {!! nl2br(e($article->content)) !!}
+                    {!! nl2br(e($article->getContentIn($viewLocale))) !!}
                 </div>
             </div>
             <div class="card-footer">

@@ -12,6 +12,9 @@ Route::get('/', [EtudiantController::class, 'index'])->name('home');
 // Language switcher route
 Route::get('/locale/{locale}', [LocaleController::class, 'change'])->name('locale.change');
 
+// Article view language toggle (doesn't change app locale)
+Route::get('/articles/view-locale/{locale}', [ArticleController::class, 'changeViewLocale'])->name('articles.viewlocale.change');
+
 // Protected routes - require authentication
 Route::middleware('auth')->group(function () {
     Route::resource('etudiants', EtudiantController::class)->except(['index', 'show']);
