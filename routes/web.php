@@ -5,6 +5,7 @@ use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\ArticleController;
 
 Route::get('/', [EtudiantController::class, 'index'])->name('home');
 
@@ -14,9 +15,14 @@ Route::get('/locale/{locale}', [LocaleController::class, 'change'])->name('local
 // Protected routes - require authentication
 Route::middleware('auth')->group(function () {
     Route::resource('etudiants', EtudiantController::class)->except(['index', 'show']);
+    Route::resource('articles', ArticleController::class)->except(['index', 'show']);
 });
 
-// Public routes - no authentication required
+// Public routes - no authentication required (viewable by authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::resource('articles', ArticleController::class)->only(['index', 'show']);
+});
+
 Route::resource('etudiants', EtudiantController::class)->only(['index', 'show']);
 
 // Auth resource routes - using only create, store, destroy for login/logout

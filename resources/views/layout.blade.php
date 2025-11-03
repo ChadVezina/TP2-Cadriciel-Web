@@ -30,6 +30,11 @@
                                 <i class="bi bi-person-plus-fill"></i> {{ __('New Student') }}
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('articles.index') }}">
+                                <i class="bi bi-chat-left-text"></i> {{ __('Forum') }}
+                            </a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}

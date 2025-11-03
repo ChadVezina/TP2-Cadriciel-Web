@@ -59,4 +59,12 @@ class User extends Authenticatable
     {
         return $this->etudiant()->exists();
     }
+
+    /**
+     * Get all articles written by the user.
+     */
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
 }
