@@ -4,11 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'title',
         'content',
@@ -16,59 +23,104 @@ class Article extends Model
         'user_id',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 
-    public function user()
+    /**
+     * Get the user that owns the article.
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function translations()
+    /**
+     * Get the translations for the article.
+     */
+    public function translations(): HasMany
     {
         return $this->hasMany(ArticleTranslation::class);
     }
 
     /**
-     * Get translation for specific locale
+     * Scope a query to only include articles by a specific user.
      */
-    public function getTranslation($locale)
+    public function scopeByUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Scope a query to only include articles in a specific language.
+     */
+    public function scopeInLanguage($query, string $language)
+    {
+        return $query->where('language', $language);
+    }
+
+    /**
+     * Scope a query to search articles by title or content.
+     */
+    public function scopeSearch($query, ?string $search)
+    {
+        if (empty($search)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+              ->orWhere('content', 'like', "%{$search}%");
+        });
+    }
+
+    /**
+     * Get translation for specific locale.
+     */
+    public function getTranslation(string $locale): ?ArticleTranslation
     {
         return $this->translations()->where('locale', $locale)->first();
     }
 
     /**
-     * Get title in specific language
+     * Get title in specific language.
      */
-    public function getTitleIn($locale)
+    public function getTitleIn(string $locale): string
     {
         $translation = $this->getTranslation($locale);
-        return $translation ? $translation->title : $this->title;
+        return $translation?->title ?? $this->title;
     }
 
     /**
-     * Get content in specific language
+     * Get content in specific language.
      */
-    public function getContentIn($locale)
+    public function getContentIn(string $locale): string
     {
         $translation = $this->getTranslation($locale);
-        return $translation ? $translation->content : $this->content;
+        return $translation?->content ?? $this->content;
     }
 
     /**
-     * Check if translation exists for locale
+     * Check if translation exists for locale.
      */
-    public function hasTranslation($locale)
+    public function hasTranslation(string $locale): bool
     {
         return $this->translations()->where('locale', $locale)->exists();
     }
 
     /**
-     * Check if article has complete translations (not marked as "[Translation needed]")
+     * Check if article has complete translations.
      */
-    public function isFullyTranslated()
+    public function isFullyTranslated(): bool
     {
         $frTranslation = $this->getTranslation('fr');
         $enTranslation = $this->getTranslation('en');
@@ -77,8 +129,15 @@ class Article extends Model
             return false;
         }
 
-        // Check if translations are not placeholders
-        return !str_starts_with($frTranslation->title, '[Translation needed]') 
+        return !str_starts_with($frTranslation->title, '[Translation needed]')
             && !str_starts_with($enTranslation->title, '[Translation needed]');
+    }
+
+    /**
+     * Get the article's excerpt.
+     */
+    public function getExcerptAttribute(?int $length = 150): string
+    {
+        return str($this->content)->limit($length);
     }
 }

@@ -1,12 +1,12 @@
 @extends('layout')
 
-@section('title', __('Forum'))
+@section('title', __('articles.index.title'))
 
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><i class="bi bi-chat-left-text"></i> {{ __('Forum') }}</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-chat-left-text"></i> {{ __('articles.index.title') }}</h1>
             <div class="d-flex gap-2">
                 <!-- Language Toggle Buttons for Articles -->
                 <div class="btn-group" role="group">
@@ -20,7 +20,7 @@
                     </a>
                 </div>
                 <a href="{{ route('articles.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> {{ __('Nouvel Article') }}
+                    <i class="bi bi-plus-circle"></i> {{ __('articles.index.new') }}
                 </a>
             </div>
         </div>
@@ -32,9 +32,9 @@
             </div>
         @endif
 
-        @if($articles->isEmpty())
+                @if($articles->isEmpty())
             <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> {{ __('Aucun article disponible pour le moment.') }}
+                <i class="bi bi-info-circle"></i> {{ __('articles.empty.no_articles') }}
             </div>
         @else
             <div class="row">
@@ -49,11 +49,11 @@
                                     <span class="badge bg-secondary ms-2">{{ strtoupper($article->language) }}</span>
                                     @if($article->isFullyTranslated())
                                         <span class="badge bg-success ms-1">
-                                            <i class="bi bi-check-circle"></i> {{ __('Traduit') }}
+                                            <i class="bi bi-check-circle"></i> {{ __('articles.status.translated') }}
                                         </span>
                                     @else
                                         <span class="badge bg-warning text-dark ms-1">
-                                            <i class="bi bi-exclamation-circle"></i> {{ __('Non traduit') }}
+                                            <i class="bi bi-exclamation-circle"></i> {{ __('articles.status.not_translated') }}
                                         </span>
                                     @endif
                                 </h5>
@@ -66,19 +66,19 @@
                                 <p class="card-text">{{ Str::limit($article->getContentIn($viewLocale), 200) }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <a href="{{ route('articles.show', $article) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye"></i> {{ __('Lire la suite') }}
+                                        <i class="bi bi-eye"></i> {{ __('articles.actions.read_more') }}
                                     </a>
                                     @if(Auth::id() === $article->user_id)
                                         <div>
                                             <a href="{{ route('articles.edit', $article) }}" class="btn btn-sm btn-warning">
-                                                <i class="bi bi-pencil"></i> {{ __('Modifier') }}
+                                                <i class="bi bi-pencil"></i> {{ __('common.edit') }}
                                             </a>
                                             <form action="{{ route('articles.destroy', $article) }}" method="POST" class="d-inline" 
-                                                  onsubmit="return confirm('{{ __('Êtes-vous sûr de vouloir supprimer cet article ?') }}');">
+                                                  onsubmit="return confirm('{{ __('articles.delete.confirm') }}');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="bi bi-trash"></i> {{ __('Supprimer') }}
+                                                    <i class="bi bi-trash"></i> {{ __('common.delete') }}
                                                 </button>
                                             </form>
                                         </div>

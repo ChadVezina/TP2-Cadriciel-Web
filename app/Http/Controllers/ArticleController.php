@@ -2,18 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Article;
+use App\Services\ArticleService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct(protected ArticleService $articleService)
+    {
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $articles = Article::with(['user', 'translations'])->latest()->paginate(10);
+        $this->authorize('viewAny', Article::class);
+
+        $articles = $this->articleService->getPaginatedArticles(10);
         $viewLocale = $request->session()->get('article_view_locale', app()->getLocale());
         return view('articles.index', compact('articles', 'viewLocale'));
     }
@@ -21,55 +34,35 @@ class ArticleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
+        $this->authorize('create', Article::class);
+
         return view('articles.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title_fr' => 'required|string|max:255',
-            'content_fr' => 'required|string',
-            'title_en' => 'required|string|max:255',
-            'content_en' => 'required|string',
-            'language' => 'required|in:fr,en',
-        ]);
+        $this->authorize('create', Article::class);
 
-        // Create the article with the primary language content
-        $article = Article::create([
-            'title' => $validated['title_' . $validated['language']],
-            'content' => $validated['content_' . $validated['language']],
-            'language' => $validated['language'],
-            'user_id' => Auth::id(),
-        ]);
+        $this->articleService->createArticle($request->validated(), $request->user());
 
-        // Save translations for both languages
-        $article->translations()->create([
-            'locale' => 'fr',
-            'title' => $validated['title_fr'],
-            'content' => $validated['content_fr'],
-        ]);
-
-        $article->translations()->create([
-            'locale' => 'en',
-            'title' => $validated['title_en'],
-            'content' => $validated['content_en'],
-        ]);
-
-        return redirect()->route('articles.index')
-            ->with('success', __('Article créé avec succès.'));
+        return redirect()
+            ->route('articles.index')
+            ->with('success', __('articles.created'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Article $article)
+    public function show(Request $request, Article $article): View
     {
-        $article->load('translations');
+        $this->authorize('view', $article);
+
+        $article = $this->articleService->getArticleWithTranslations($article);
         $viewLocale = $request->session()->get('article_view_locale', app()->getLocale());
         return view('articles.show', compact('article', 'viewLocale'));
     }
@@ -77,12 +70,9 @@ class ArticleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Article $article)
+    public function edit(Article $article): View
     {
-        // Vérifier que l'utilisateur est l'auteur de l'article
-        if ($article->user_id !== Auth::id()) {
-            abort(403, __('Vous n\'êtes pas autorisé à modifier cet article.'));
-        }
+        $this->authorize('update', $article);
 
         $article->load('translations');
         return view('articles.edit', compact('article'));
@@ -91,79 +81,42 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Article $article)
+    public function update(UpdateArticleRequest $request, Article $article): RedirectResponse
     {
-        // Vérifier que l'utilisateur est l'auteur de l'article
-        if ($article->user_id !== Auth::id()) {
-            abort(403, __('Vous n\'êtes pas autorisé à modifier cet article.'));
-        }
+        $this->authorize('update', $article);
 
-        $validated = $request->validate([
-            'title_fr' => 'required|string|max:255',
-            'content_fr' => 'required|string',
-            'title_en' => 'required|string|max:255',
-            'content_en' => 'required|string',
-            'language' => 'required|in:fr,en',
-        ]);
+        $this->articleService->updateArticle($article, $request->validated());
 
-        // Update the article with the primary language content
-        $article->update([
-            'title' => $validated['title_' . $validated['language']],
-            'content' => $validated['content_' . $validated['language']],
-            'language' => $validated['language'],
-        ]);
-
-        // Update or create translations for both languages
-        $article->translations()->updateOrCreate(
-            ['locale' => 'fr'],
-            [
-                'title' => $validated['title_fr'],
-                'content' => $validated['content_fr'],
-            ]
-        );
-
-        $article->translations()->updateOrCreate(
-            ['locale' => 'en'],
-            [
-                'title' => $validated['title_en'],
-                'content' => $validated['content_en'],
-            ]
-        );
-
-        return redirect()->route('articles.index')
-            ->with('success', __('Article modifié avec succès.'));
+        return redirect()
+            ->route('articles.index')
+            ->with('success', __('articles.updated'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): RedirectResponse
     {
-        // Vérifier que l'utilisateur est l'auteur de l'article
-        if ($article->user_id !== Auth::id()) {
-            abort(403, __('Vous n\'êtes pas autorisé à supprimer cet article.'));
-        }
+        $this->authorize('delete', $article);
 
-        $article->delete();
+        $this->articleService->deleteArticle($article);
 
-        return redirect()->route('articles.index')
-            ->with('success', __('Article supprimé avec succès.'));
+        return redirect()
+            ->route('articles.index')
+            ->with('success', __('articles.deleted'));
     }
 
     /**
-     * Change the view locale for articles (independent from app locale)
+     * Change the view locale for articles (independent from app locale).
      */
-    public function changeViewLocale(Request $request, string $locale)
+    public function changeViewLocale(Request $request, string $locale): RedirectResponse
     {
-        // Validate that the locale is supported
-        if (!in_array($locale, ['fr', 'en'])) {
+        if (!in_array($locale, config('app.available_locales') ? array_keys(config('app.available_locales')) : ['fr', 'en'])) {
             abort(400, 'Locale not supported');
         }
 
-        // Store article view locale in session
         $request->session()->put('article_view_locale', $locale);
 
-        // Redirect back to previous page
         return redirect()->back();
     }
 }

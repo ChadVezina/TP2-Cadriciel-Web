@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', __('Document Repository'))
+@section('title', __('documents.index.title'))
 
 @section('content')
 <div class="container">
@@ -8,10 +8,10 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="mb-0">
-                    <i class="bi bi-folder-fill"></i> {{ __('Document Repository') }}
+                    <i class="bi bi-folder-fill"></i> {{ __('documents.index.title') }}
                 </h1>
                 <a href="{{ route('documents.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> {{ __('Share Document') }}
+                    <i class="bi bi-plus-circle"></i> {{ __('documents.index.share') }}
                 </a>
             </div>
         </div>
@@ -31,11 +31,11 @@
                     <table class="table table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>{{ __('Title') }}</th>
-                                <th>{{ __('Shared By') }}</th>
-                                <th>{{ __('Type') }}</th>
-                                <th>{{ __('Date') }}</th>
-                                <th class="text-end">{{ __('Actions') }}</th>
+                                <th>{{ __('documents.table.title') }}</th>
+                                <th>{{ __('documents.table.shared_by') }}</th>
+                                <th>{{ __('documents.table.type') }}</th>
+                                <th>{{ __('documents.table.date') }}</th>
+                                <th class="text-end">{{ __('common.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,26 +59,26 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('documents.show', $document) }}"
-                                               class="btn btn-sm btn-outline-primary"
-                                               title="{{ __('Download') }}">
+                                                          <a href="{{ route('documents.show', $document) }}"
+                                                              class="btn btn-sm btn-outline-primary"
+                                                              title="{{ __('documents.actions.download') }}">
                                                 <i class="bi bi-download"></i>
                                             </a>
                                             @if($document->isOwnedBy(Auth::user()))
                                                 <a href="{{ route('documents.edit', $document) }}"
                                                    class="btn btn-sm btn-outline-secondary"
-                                                   title="{{ __('Edit') }}">
+                                                   title="{{ __('common.edit') }}">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                                 <form method="POST"
                                                       action="{{ route('documents.destroy', $document) }}"
                                                       class="d-inline"
-                                                      onsubmit="return confirm('{{ __('Are you sure you want to delete this document?') }}');">
+                                                      onsubmit="return confirm('{{ __('documents.delete.confirm') }}');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
                                                             class="btn btn-sm btn-outline-danger"
-                                                            title="{{ __('Delete') }}">
+                                                            title="{{ __('common.delete') }}">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -98,9 +98,9 @@
             @else
                 <div class="text-center py-5">
                     <i class="bi bi-folder-x" style="font-size: 4rem; color: #ccc;"></i>
-                    <p class="text-muted mt-3">{{ __('No documents shared yet.') }}</p>
+                    <p class="text-muted mt-3">{{ __('documents.empty.no_documents') }}</p>
                     <a href="{{ route('documents.create') }}" class="btn btn-primary mt-2">
-                        <i class="bi bi-plus-circle"></i> {{ __('Share the first document') }}
+                        <i class="bi bi-plus-circle"></i> {{ __('documents.empty.share_first') }}
                     </a>
                 </div>
             @endif

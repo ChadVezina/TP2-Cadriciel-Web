@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEtudiantRequest;
+use App\Http\Requests\UpdateEtudiantRequest;
 use App\Models\Etudiant;
 use App\Models\Ville;
-use App\Models\User;
+use App\Services\EtudiantService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class EtudiantController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Create a new controller instance.
      */
+    public function __construct(protected EtudiantService $etudiantService)
+    {
+    }
+
     /**
      * Display a listing of the resource with optional search, ordering and pagination.
      *
@@ -22,39 +29,11 @@ class EtudiantController extends Controller
      * - name_order: 'asc' or 'desc' to order by name
      * - city_order: 'asc' or 'desc' to order by city name
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $request = request();
+        $this->authorize('viewAny', Etudiant::class);
 
-        // pagination size (bounded 10..100)
-        $perPage = (int) $request->query('per_page', 10);
-        if ($perPage < 10) $perPage = 10;
-        if ($perPage > 100) $perPage = 100;
-
-        $search = $request->query('search');
-        $nameOrder = $request->query('name_order'); // 'asc'|'desc'|null
-        $cityOrder = $request->query('city_order'); // 'asc'|'desc'|null
-
-        $query = Etudiant::with('city')
-            ->select('etudiants.*');
-
-        if (!empty($search)) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-
-        // if requested, order by name
-        if (in_array($nameOrder, ['asc', 'desc'])) {
-            $query->orderBy('name', $nameOrder);
-        }
-
-        // if requested, join cities and order by city name
-        if (in_array($cityOrder, ['asc', 'desc'])) {
-            $query->leftJoin('villes', 'villes.id', '=', 'etudiants.city_id')
-                  ->orderBy('villes.name', $cityOrder)
-                  ->select('etudiants.*');
-        }
-
-        $students = $query->paginate($perPage)->appends($request->query());
+        $students = $this->etudiantService->getPaginatedStudents($request->query());
 
         return view('etudiants.index', compact('students'));
     }
@@ -62,8 +41,10 @@ class EtudiantController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
+        $this->authorize('create', Etudiant::class);
+
         $cities = Ville::orderBy('name')->get();
         return view('etudiants.create', compact('cities'));
     }
@@ -71,49 +52,35 @@ class EtudiantController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEtudiantRequest $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
-            'email' => 'required|email|unique:etudiants,email',
-            'birthdate' => 'required|date',
-            'city_id' => 'required|exists:villes,id',
-        ]);
-        // Try to associate the student with an existing user matching the
-        // email provided in the form. If no user exists, leave the relation null
-        // (the migration allows nullable user_id).
-            // Find or create a user matching the provided email. If no user exists,
-            // create one using the provided name and a random password.
-            $user = User::firstOrCreate(
-                ['email' => $validatedData['email']],
-                [
-                    'name' => $validatedData['name'],
-                    // use Str::random for a temporary password; User model casts 'password' => 'hashed'
-                    'password' => Str::random(12),
-                ]
-            );
-            $validatedData['user_id'] = $user->id;
+        $this->authorize('create', Etudiant::class);
 
-        $student = Etudiant::create($validatedData);
-        return redirect()->route('etudiants.index')->with('success', 'Étudiant créé avec succès.');
+        $this->etudiantService->createStudent($request->validated());
+
+        return redirect()
+            ->route('etudiants.index')
+            ->with('success', __('students.created'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Etudiant $etudiant)
+    public function show(Etudiant $etudiant): View
     {
-        $etudiant->load('city');
+        $this->authorize('view', $etudiant);
+
+        $etudiant->load('city', 'user');
         return view('etudiants.show', ['student' => $etudiant]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Etudiant $etudiant)
+    public function edit(Etudiant $etudiant): View
     {
+        $this->authorize('update', $etudiant);
+
         $cities = Ville::orderBy('name')->get();
         return view('etudiants.edit', compact('etudiant', 'cities'));
     }
@@ -121,38 +88,28 @@ class EtudiantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Etudiant $etudiant)
+    public function update(UpdateEtudiantRequest $request, Etudiant $etudiant): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
-            'email' => 'required|email|unique:etudiants,email,' . $etudiant->id,
-            'birthdate' => 'required|date',
-            'city_id' => 'required|exists:villes,id',
-        ]);
+        $this->authorize('update', $etudiant);
 
-        // Keep user association consistent with the provided email.
-            // On update, ensure the user association follows the (possibly new) email.
-            $user = User::firstOrCreate(
-                ['email' => $validatedData['email']],
-                [
-                    'name' => $validatedData['name'],
-                    'password' => Str::random(12),
-                ]
-            );
-            $validatedData['user_id'] = $user->id;
+        $this->etudiantService->updateStudent($etudiant, $request->validated());
 
-        $etudiant->update($validatedData);
-        return redirect()->route('etudiants.index')->with('success', 'Étudiant mis à jour avec succès.');
+        return redirect()
+            ->route('etudiants.index')
+            ->with('success', __('students.updated'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Etudiant $etudiant)
+    public function destroy(Etudiant $etudiant): RedirectResponse
     {
-        $etudiant->delete();
-        return redirect()->route('etudiants.index')->with('success', 'Étudiant supprimé avec succès.');
+        $this->authorize('delete', $etudiant);
+
+        $this->etudiantService->deleteStudent($etudiant);
+
+        return redirect()
+            ->route('etudiants.index')
+            ->with('success', __('students.deleted'));
     }
 }

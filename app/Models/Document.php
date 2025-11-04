@@ -4,12 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Document extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'filename',
@@ -18,76 +25,124 @@ class Document extends Model
         'file_type',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 
     /**
-     * Relation avec l'utilisateur
+     * Get the user that owns the document.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Relation avec les traductions
+     * Get the translations for the document.
      */
-    public function translations()
+    public function translations(): HasMany
     {
         return $this->hasMany(DocumentTranslation::class);
     }
 
     /**
-     * Obtenir la traduction pour une langue spécifique
+     * Scope a query to only include documents by a specific user.
      */
-    public function getTranslation($locale)
+    public function scopeByUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Scope a query to only include documents of a specific type.
+     */
+    public function scopeOfType($query, string $type)
+    {
+        return $query->where('file_type', $type);
+    }
+
+    /**
+     * Get translation for a specific locale.
+     */
+    public function getTranslation(string $locale): ?DocumentTranslation
     {
         return $this->translations()->where('locale', $locale)->first();
     }
 
     /**
-     * Obtenir le titre dans une langue spécifique
+     * Get title in a specific language.
      */
-    public function getTitleIn($locale)
+    public function getTitleIn(string $locale): string
     {
         $translation = $this->getTranslation($locale);
-        return $translation ? $translation->title : $this->original_filename;
+        return $translation?->title ?? $this->original_filename;
     }
 
     /**
-     * Vérifier si l'utilisateur est le propriétaire du document
+     * Check if the user owns the document.
      */
-    public function isOwnedBy($user)
+    public function isOwnedBy(User $user): bool
     {
         return $this->user_id === $user->id;
     }
 
     /**
-     * Obtenir l'URL complète du fichier
+     * Get the file URL.
      */
-    public function getFileUrl()
+    public function getFileUrl(): string
     {
-        // Build the public URL via the storage symlink (public/storage)
         return asset('storage/' . ltrim($this->file_path, '/'));
     }
 
     /**
-     * Obtenir le chemin complet du fichier
+     * Get the full file path.
      */
-    public function getFilePath()
+    public function getFilePath(): string
     {
         return Storage::disk('public')->path($this->file_path);
     }
 
     /**
-     * Supprimer le fichier du stockage
+     * Delete the file from storage.
      */
-    public function deleteFile()
+    public function deleteFile(): void
     {
         if (Storage::disk('public')->exists($this->file_path)) {
             Storage::disk('public')->delete($this->file_path);
         }
+    }
+
+    /**
+     * Get the human-readable file size.
+     */
+    public function getFileSizeAttribute(): string
+    {
+        $bytes = Storage::disk('public')->size($this->file_path);
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $power = floor(($bytes > 0 ? log($bytes) : 0) / log(1024));
+        $power = min($power, count($units) - 1);
+        return round($bytes / pow(1024, $power), 2) . ' ' . $units[$power];
+    }
+
+    /**
+     * Get the file icon based on type.
+     */
+    public function getFileIconAttribute(): string
+    {
+        return match($this->file_type) {
+            'pdf' => 'file-pdf',
+            'zip' => 'file-archive',
+            'doc', 'docx' => 'file-word',
+            default => 'file',
+        };
     }
 }

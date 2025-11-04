@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', __('Registration'))
+@section('title', __('users.create.title'))
 @section('content')
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -23,13 +23,13 @@
         <div class="col-md-6">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">{{ __('Create an account') }}</h4>
+                    <h4 class="card-title mb-0">{{ __('users.create.header') }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('users.store') }}">
                         @csrf
                         <div class="mb-3">
-                            <label for="name" class="form-label">{{ __('Full Name') }} <span class="text-danger">*</span></label>
+                            <label for="name" class="form-label">{{ __('form.full_name') }} <span class="text-danger">*</span></label>
                             <input type="text"
                                    class="form-control @error('name') is-invalid @enderror"
                                    id="name"
@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">{{ __('Email Address') }} <span class="text-danger">*</span></label>
+                            <label for="email" class="form-label">{{ __('form.email_address') }} <span class="text-danger">*</span></label>
                             <input type="email"
                                    class="form-control @error('email') is-invalid @enderror"
                                    id="email"
@@ -55,14 +55,14 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">{{ __('Password') }} <span class="text-danger">*</span></label>
+                            <label for="password" class="form-label">{{ __('form.password') }} <span class="text-danger">*</span></label>
                             <input type="password"
                                    class="form-control @error('password') is-invalid @enderror"
                                    id="password"
                                    name="password"
                                    required>
                             <small class="form-text text-muted">
-                                {{ __('The password must contain between 6 and 20 characters.') }}
+                                {{ __('form.password.range') }}
                             </small>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -70,7 +70,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }} <span class="text-danger">*</span></label>
+                            <label for="password_confirmation" class="form-label">{{ __('form.confirm_password') }} <span class="text-danger">*</span></label>
                             <input type="password"
                                    class="form-control @error('password_confirmation') is-invalid @enderror"
                                    id="password_confirmation"
@@ -79,15 +79,15 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">{{ __('Register') }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('auth.register') }}</button>
                         </div>
                     </form>
 
                     <hr class="my-4">
 
                     <div class="text-center">
-                        <p class="mb-0">{{ __('Already have an account?') }}
-                            <a href="{{ route('login') }}" class="text-decoration-none">{{ __('Login') }}</a>
+                        <p class="mb-0">{{ __('auth.already_have_account') }}
+                            <a href="{{ route('login') }}" class="text-decoration-none">{{ __('auth.login') }}</a>
                         </p>
                     </div>
                 </div>

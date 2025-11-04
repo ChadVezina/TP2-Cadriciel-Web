@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', __('Login'))
+@section('title', __('auth.login'))
 @section('content')
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -23,13 +23,13 @@
         <div class="col-md-5">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">{{ __('Login') }}</h4>
+                    <h4 class="card-title mb-0">{{ __('auth.login') }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('auth.store') }}">
                         @csrf
                         <div class="mb-3">
-                            <label for="email" class="form-label">{{ __('Email Address') }}</label>
+                            <label for="email" class="form-label">{{ __('form.email_address') }}</label>
                             <input type="email"
                                    class="form-control @error('email') is-invalid @enderror"
                                    id="email"
@@ -43,7 +43,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">{{ __('Password') }}</label>
+                            <label for="password" class="form-label">{{ __('form.password') }}</label>
                             <input type="password"
                                    class="form-control @error('password') is-invalid @enderror"
                                    id="password"
@@ -57,20 +57,20 @@
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="remember" name="remember">
                             <label class="form-check-label" for="remember">
-                                {{ __('Remember Me') }}
+                                {{ __('auth.remember') }}
                             </label>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">{{ __('Login') }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('auth.login') }}</button>
                         </div>
                     </form>
 
                     <hr class="my-4">
 
                     <div class="text-center">
-                        <p class="mb-0">{{ __("Don't have an account?") }}
-                            <a href="{{ route('registration') }}" class="text-decoration-none">{{ __('Register') }}</a>
+                        <p class="mb-0">{{ __('auth.no_account') }}
+                            <a href="{{ route('registration') }}" class="text-decoration-none">{{ __('auth.register') }}</a>
                         </p>
                     </div>
                 </div>

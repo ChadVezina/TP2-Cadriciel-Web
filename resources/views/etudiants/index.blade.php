@@ -1,12 +1,12 @@
 @extends('layout')
 
-@section('title', __('Students List'))
+@section('title', __('students.index.title'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="page-title mb-0">{{ __('Students List') }}</h1>
+    <h1 class="page-title mb-0">{{ __('students.index.title') }}</h1>
     <a href="{{ route('etudiants.create') }}" class="btn btn-primary">
-        + {{ __('Add Student') }}
+        + {{ __('students.create.new') }}
     </a>
 </div>
 
@@ -22,7 +22,7 @@
         <div class="p-3 border-bottom">
             <form method="GET" action="{{ route('etudiants.index') }}" class="row g-2 align-items-center">
                 <div class="col-auto">
-                    <input type="search" name="search" class="form-control" placeholder="{{ __('Search name...') }}" value="{{ request('search') }}">
+                    <input type="search" name="search" class="form-control" placeholder="{{ __('students.index.search_placeholder') }}" value="{{ request('search') }}">
                 </div>
                 <div class="col-auto">
                     <select name="per_page" class="form-select">
@@ -33,21 +33,21 @@
                 </div>
                 <div class="col-auto">
                     <select name="name_order" class="form-select">
-                        <option value="">{{ __('Name order') }}</option>
-                        <option value="asc" {{ request('name_order') == 'asc' ? 'selected' : '' }}>{{ __('A → Z') }}</option>
-                        <option value="desc" {{ request('name_order') == 'desc' ? 'selected' : '' }}>{{ __('Z → A') }}</option>
+                        <option value="">{{ __('students.index.name_order') }}</option>
+                        <option value="asc" {{ request('name_order') == 'asc' ? 'selected' : '' }}>{{ __('common.sort.az') }}</option>
+                        <option value="desc" {{ request('name_order') == 'desc' ? 'selected' : '' }}>{{ __('common.sort.za') }}</option>
                     </select>
                 </div>
                 <div class="col-auto">
                     <select name="city_order" class="form-select">
-                        <option value="">{{ __('City order') }}</option>
-                        <option value="asc" {{ request('city_order') == 'asc' ? 'selected' : '' }}>{{ __('A → Z') }}</option>
-                        <option value="desc" {{ request('city_order') == 'desc' ? 'selected' : '' }}>{{ __('Z → A') }}</option>
+                        <option value="">{{ __('students.index.city_order') }}</option>
+                        <option value="asc" {{ request('city_order') == 'asc' ? 'selected' : '' }}>{{ __('common.sort.az') }}</option>
+                        <option value="desc" {{ request('city_order') == 'desc' ? 'selected' : '' }}>{{ __('common.sort.za') }}</option>
                     </select>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary">{{ __('Apply') }}</button>
-                    <a href="{{ route('etudiants.index') }}" class="btn btn-link">{{ __('Reset') }}</a>
+                    <button class="btn btn-primary">{{ __('common.apply') }}</button>
+                    <a href="{{ route('etudiants.index') }}" class="btn btn-link">{{ __('common.reset') }}</a>
                 </div>
             </form>
         </div>
@@ -55,10 +55,10 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="py-3 px-4">{{ __('Name') }}</th>
-                        <th class="py-3 px-4">{{ __('Email') }}</th>
-                        <th class="py-3 px-4">{{ __('City') }}</th>
-                        <th class="py-3 px-4 text-end">{{ __('Actions') }}</th>
+                        <th class="py-3 px-4">{{ __('common.name') }}</th>
+                        <th class="py-3 px-4">{{ __('common.email') }}</th>
+                        <th class="py-3 px-4">{{ __('common.city') }}</th>
+                        <th class="py-3 px-4 text-end">{{ __('common.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,19 +70,19 @@
                         <td class="py-3 px-4 text-end">
                             <a href="{{ route('etudiants.show', $student->id) }}"
                                 class="btn btn-sm btn-outline-primary">
-                                {{ __('View') }}
+                                {{ __('common.view') }}
                             </a>
                             <a href="{{ route('etudiants.edit', $student->id) }}"
                                 class="btn btn-sm btn-outline-secondary">
-                                {{ __('Edit') }}
+                                {{ __('common.edit') }}
                             </a>
                             <form class="d-inline" action="{{ route('etudiants.destroy', $student->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button onclick="return confirm('{{ __('Are you sure you want to delete this student?') }}');"
+                                <button onclick="return confirm('{{ __('students.delete.confirm') }}');"
                                     type="submit"
                                     class="btn btn-sm btn-outline-danger">
-                                    {{ __('Delete') }}
+                                    {{ __('common.delete') }}
                                 </button>
                             </form>
                         </td>
@@ -90,7 +90,7 @@
                     @empty
                     <tr>
                         <td colspan="4" class="text-center py-5 text-muted">
-                            {{ __('No students found') }}
+                            {{ __('students.index.no_students') }}
                         </td>
                     </tr>
                     @endforelse
