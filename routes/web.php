@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DocumentController;
 
 Route::get('/', [EtudiantController::class, 'index'])->name('home');
 
@@ -24,6 +25,7 @@ Route::middleware('auth')->group(function () {
 // Public routes - no authentication required (viewable by authenticated users)
 Route::middleware('auth')->group(function () {
     Route::resource('articles', ArticleController::class)->only(['index', 'show']);
+    Route::resource('documents', DocumentController::class);
 });
 
 Route::resource('etudiants', EtudiantController::class)->only(['index', 'show']);

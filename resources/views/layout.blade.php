@@ -35,6 +35,11 @@
                                 <i class="bi bi-chat-left-text"></i> {{ __('Forum') }}
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('documents.index') }}">
+                                <i class="bi bi-folder-fill"></i> {{ __('Documents') }}
+                            </a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
@@ -85,6 +90,7 @@
                             @endforeach
                         </ul>
                     </li>
+                    <!-- Theme toggle removed -->
                 </ul>
             </div>
         </div>
@@ -95,6 +101,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Theme toggle script removed -->
+    @vite(['resources/js/app.js'])
 </body>
 
 </html>
