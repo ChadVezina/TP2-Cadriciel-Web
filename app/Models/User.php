@@ -8,12 +8,32 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Modèle User
+ * 
+ * Représente un utilisateur du système avec authentification.
+ * Un utilisateur peut avoir un profil étudiant et peut créer des articles et des documents.
+ * 
+ * @property int $id Identifiant unique de l'utilisateur
+ * @property string $name Nom complet de l'utilisateur
+ * @property string $email Adresse courriel unique
+ * @property \Illuminate\Support\Carbon|null $email_verified_at Date de vérification du courriel
+ * @property string $password Mot de passe hashé
+ * @property bool $is_admin Indicateur de statut administrateur
+ * @property string|null $remember_token Token pour la fonctionnalité "Se souvenir de moi"
+ * @property \Illuminate\Support\Carbon $created_at Date de création
+ * @property \Illuminate\Support\Carbon $updated_at Date de dernière modification
+ * 
+ * @property-read Etudiant|null $etudiant Profil étudiant associé
+ * @property-read \Illuminate\Database\Eloquent\Collection|Article[] $articles Articles créés par l'utilisateur
+ * @property-read \Illuminate\Database\Eloquent\Collection|Document[] $documents Documents téléchargés par l'utilisateur
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs qui peuvent être assignés en masse.
      *
      * @var array<int, string>
      */
@@ -25,7 +45,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Les attributs qui doivent être masqués pour la sérialisation.
      *
      * @var array<int, string>
      */
@@ -35,7 +55,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Récupère les attributs qui doivent être castés.
      *
      * @return array<string, string>
      */
@@ -49,7 +69,9 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the student profile associated with the user (if exists).
+     * Récupère le profil étudiant associé à l'utilisateur (si existant).
+     * 
+     * @return HasOne Relation HasOne vers le modèle Etudiant
      */
     public function etudiant(): HasOne
     {
@@ -57,7 +79,9 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all articles written by the user.
+     * Récupère tous les articles écrits par l'utilisateur.
+     * 
+     * @return HasMany Collection d'articles de l'utilisateur
      */
     public function articles(): HasMany
     {
@@ -65,7 +89,9 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all documents uploaded by the user.
+     * Récupère tous les documents téléchargés par l'utilisateur.
+     * 
+     * @return HasMany Collection de documents de l'utilisateur
      */
     public function documents(): HasMany
     {
@@ -73,7 +99,9 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is a student.
+     * Vérifie si l'utilisateur est un étudiant.
+     * 
+     * @return bool True si l'utilisateur possède un profil étudiant
      */
     public function isStudent(): bool
     {
@@ -81,7 +109,9 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is an admin.
+     * Vérifie si l'utilisateur est un administrateur.
+     * 
+     * @return bool True si l'utilisateur a le statut administrateur
      */
     public function isAdmin(): bool
     {
@@ -89,7 +119,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope a query to only include admin users.
+     * Limite la requête aux utilisateurs administrateurs.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeAdmins($query)
     {
@@ -97,7 +130,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope a query to only include students.
+     * Limite la requête aux utilisateurs ayant un profil étudiant.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeStudents($query)
     {
@@ -105,7 +141,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope a query to search users by name or email.
+     * Recherche les utilisateurs par nom ou courriel.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param string|null $search Terme de recherche
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch($query, ?string $search)
     {

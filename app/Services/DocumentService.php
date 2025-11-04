@@ -8,10 +8,20 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
+/**
+ * Service DocumentService
+ * 
+ * Gère la logique métier liée aux documents.
+ * Fournit des méthodes pour créer, mettre à jour, supprimer et récupérer
+ * des documents avec leur gestion de fichiers et traductions multilingues.
+ */
 class DocumentService
 {
     /**
-     * Get paginated list of documents.
+     * Récupère une liste paginée de documents avec leurs traductions.
+     * 
+     * @param int $perPage Nombre de documents par page (défaut: 10)
+     * @return LengthAwarePaginator Liste paginée de documents avec utilisateur et traductions
      */
     public function getPaginatedDocuments(int $perPage = 10): LengthAwarePaginator
     {
@@ -21,7 +31,15 @@ class DocumentService
     }
 
     /**
-     * Create a new document with translations.
+     * Crée un nouveau document avec stockage du fichier et traductions.
+     * 
+     * Le fichier est stocké avec un nom unique UUID et les traductions
+     * du titre sont créées dans les deux langues.
+     * 
+     * @param array $data Données du document incluant les traductions
+     * @param UploadedFile $file Fichier téléchargé à stocker
+     * @param User $user Utilisateur propriétaire du document
+     * @return Document Document créé avec traductions et utilisateur chargés
      */
     public function createDocument(array $data, UploadedFile $file, User $user): Document
     {
@@ -41,7 +59,15 @@ class DocumentService
     }
 
     /**
-     * Update an existing document.
+     * Met à jour un document existant et optionnellement son fichier.
+     * 
+     * Si un nouveau fichier est fourni, l'ancien est supprimé et remplacé.
+     * Les traductions sont toujours synchronisées.
+     * 
+     * @param Document $document Document à mettre à jour
+     * @param array $data Nouvelles données du document incluant les traductions
+     * @param UploadedFile|null $file Nouveau fichier optionnel à stocker
+     * @return Document Document mis à jour avec traductions et utilisateur chargés
      */
     public function updateDocument(Document $document, array $data, ?UploadedFile $file = null): Document
     {
@@ -62,7 +88,10 @@ class DocumentService
     }
 
     /**
-     * Delete a document and its file.
+     * Supprime un document et son fichier physique du stockage.
+     * 
+     * @param Document $document Document à supprimer
+     * @return bool True si la suppression a réussi
      */
     public function deleteDocument(Document $document): bool
     {
@@ -71,7 +100,13 @@ class DocumentService
     }
 
     /**
-     * Store uploaded file and return file data.
+     * Stocke un fichier téléchargé et retourne ses métadonnées.
+     * 
+     * Le fichier est stocké dans le dossier 'documents' avec un nom UUID unique
+     * pour éviter les conflits de noms.
+     * 
+     * @param UploadedFile $file Fichier à stocker
+     * @return array Tableau contenant filename, original_filename, file_path et file_type
      */
     protected function storeFile(UploadedFile $file): array
     {
@@ -89,7 +124,13 @@ class DocumentService
     }
 
     /**
-     * Sync document translations.
+     * Synchronise les traductions d'un document dans les deux langues.
+     * 
+     * Crée ou met à jour les traductions du titre en français et en anglais.
+     * 
+     * @param Document $document Document dont les traductions doivent être synchronisées
+     * @param array $data Données contenant les traductions (title_fr, title_en)
+     * @return void
      */
     protected function syncTranslations(Document $document, array $data): void
     {
@@ -105,7 +146,10 @@ class DocumentService
     }
 
     /**
-     * Get document with translations.
+     * Récupère un document avec ses traductions et son utilisateur.
+     * 
+     * @param Document $document Document à charger
+     * @return Document Document avec relations chargées
      */
     public function getDocumentWithTranslations(Document $document): Document
     {

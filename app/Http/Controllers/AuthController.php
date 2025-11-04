@@ -8,17 +8,28 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Contrôleur AuthController
+ * 
+ * Gère l'authentification des utilisateurs (connexion et déconnexion).
+ */
 class AuthController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Crée une nouvelle instance du contrôleur.
+     * 
+     * @param AuthService $authService Service gérant la logique d'authentification
      */
     public function __construct(protected AuthService $authService)
     {
     }
 
     /**
-     * Display the login form.
+     * Affiche le formulaire de connexion.
+     * 
+     * Si l'utilisateur est déjà connecté, le redirige vers la liste des étudiants.
+     * 
+     * @return View|RedirectResponse Vue du formulaire ou redirection
      */
     public function create(): View|RedirectResponse
     {
@@ -29,7 +40,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle login attempt.
+     * Traite une tentative de connexion.
+     * 
+     * En cas de succès, régénère la session et redirige vers la page initialement demandée.
+     * En cas d'échec, retourne au formulaire avec un message d'erreur.
+     * 
+     * @param LoginRequest $request Requête validée contenant les identifiants
+     * @return RedirectResponse Redirection appropriée selon le résultat
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -49,7 +66,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle logout.
+     * Déconnecte l'utilisateur actuellement connecté.
+     * 
+     * Invalide la session et redirige vers le formulaire de connexion.
+     * 
+     * @param Request $request Requête HTTP
+     * @return RedirectResponse Redirection vers la page de connexion
      */
     public function destroy(Request $request): RedirectResponse
     {

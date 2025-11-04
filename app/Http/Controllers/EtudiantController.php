@@ -11,23 +11,34 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Contrôleur EtudiantController
+ * 
+ * Gère les opérations CRUD pour les étudiants avec recherche, filtrage et tri.
+ * Utilise les politiques d'autorisation pour contrôler l'accès aux profils étudiants.
+ */
 class EtudiantController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Crée une nouvelle instance du contrôleur.
+     * 
+     * @param EtudiantService $etudiantService Service gérant la logique métier des étudiants
      */
     public function __construct(protected EtudiantService $etudiantService)
     {
     }
 
     /**
-     * Display a listing of the resource with optional search, ordering and pagination.
+     * Affiche la liste paginée des étudiants avec recherche et tri optionnels.
      *
-     * Query params supported:
-     * - search: string to match against student name (LIKE)
-     * - per_page: integer (10..100) items per page
-     * - name_order: 'asc' or 'desc' to order by name
-     * - city_order: 'asc' or 'desc' to order by city name
+     * Paramètres de requête supportés:
+     * - search: Chaîne de caractères pour rechercher par nom (LIKE)
+     * - per_page: Nombre d'éléments par page (10 à 100)
+     * - name_order: 'asc' ou 'desc' pour trier par nom
+     * - city_order: 'asc' ou 'desc' pour trier par nom de ville
+     * 
+     * @param Request $request Requête HTTP contenant les paramètres de filtrage
+     * @return View Vue de la liste des étudiants
      */
     public function index(Request $request): View
     {
@@ -39,7 +50,9 @@ class EtudiantController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Affiche le formulaire de création d'un nouvel étudiant.
+     * 
+     * @return View Vue du formulaire de création avec liste des villes
      */
     public function create(): View
     {
@@ -50,7 +63,10 @@ class EtudiantController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistre un nouvel étudiant dans la base de données.
+     * 
+     * @param StoreEtudiantRequest $request Requête validée contenant les données de l'étudiant
+     * @return RedirectResponse Redirection vers la liste des étudiants avec message de succès
      */
     public function store(StoreEtudiantRequest $request): RedirectResponse
     {
@@ -64,7 +80,10 @@ class EtudiantController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Affiche les détails d'un étudiant spécifique.
+     * 
+     * @param Etudiant $etudiant Étudiant à afficher
+     * @return View Vue de détails de l'étudiant
      */
     public function show(Etudiant $etudiant): View
     {
@@ -75,7 +94,10 @@ class EtudiantController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Affiche le formulaire de modification d'un étudiant.
+     * 
+     * @param Etudiant $etudiant Étudiant à modifier
+     * @return View Vue du formulaire de modification avec liste des villes
      */
     public function edit(Etudiant $etudiant): View
     {
@@ -86,7 +108,11 @@ class EtudiantController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour un étudiant existant dans la base de données.
+     * 
+     * @param UpdateEtudiantRequest $request Requête validée contenant les nouvelles données
+     * @param Etudiant $etudiant Étudiant à mettre à jour
+     * @return RedirectResponse Redirection vers la liste des étudiants avec message de succès
      */
     public function update(UpdateEtudiantRequest $request, Etudiant $etudiant): RedirectResponse
     {
@@ -100,7 +126,10 @@ class EtudiantController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime un étudiant de la base de données.
+     * 
+     * @param Etudiant $etudiant Étudiant à supprimer
+     * @return RedirectResponse Redirection vers la liste des étudiants avec message de succès
      */
     public function destroy(Etudiant $etudiant): RedirectResponse
     {

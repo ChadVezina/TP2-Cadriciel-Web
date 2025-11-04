@@ -2,15 +2,21 @@
 
 namespace App\Enums;
 
+/**
+ * Énumération Language
+ * 
+ * Définit les langues supportées par l'application pour l'interface
+ * et les traductions de contenu.
+ */
 enum Language: string
 {
     case FRENCH = 'fr';
     case ENGLISH = 'en';
 
     /**
-     * Get all language values.
+     * Récupère toutes les valeurs de langues possibles.
      *
-     * @return array<string>
+     * @return array<string> Tableau des codes de langues (fr, en)
      */
     public static function values(): array
     {
@@ -18,7 +24,9 @@ enum Language: string
     }
 
     /**
-     * Get language label.
+     * Récupère le libellé affiché de la langue.
+     * 
+     * @return string Nom de la langue dans sa propre langue
      */
     public function label(): string
     {
@@ -29,7 +37,10 @@ enum Language: string
     }
 
     /**
-     * Get language from string value.
+     * Crée une instance de Language à partir d'une chaîne de caractères.
+     * 
+     * @param string $value Code de langue (fr ou en)
+     * @return self|null Instance de Language ou null si valeur invalide
      */
     public static function fromString(string $value): ?self
     {

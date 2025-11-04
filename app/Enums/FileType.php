@@ -2,6 +2,12 @@
 
 namespace App\Enums;
 
+/**
+ * Énumération FileType
+ * 
+ * Définit les types de fichiers autorisés pour les téléchargements de documents.
+ * Fournit des méthodes utilitaires pour obtenir les icônes, types MIME et extensions.
+ */
 enum FileType: string
 {
     case PDF = 'pdf';
@@ -10,9 +16,9 @@ enum FileType: string
     case DOCX = 'docx';
 
     /**
-     * Get all file type values.
+     * Récupère toutes les valeurs de types de fichiers possibles.
      *
-     * @return array<string>
+     * @return array<string> Tableau des extensions de fichiers autorisées
      */
     public static function values(): array
     {
@@ -20,7 +26,9 @@ enum FileType: string
     }
 
     /**
-     * Get file type icon.
+     * Récupère l'icône associée au type de fichier.
+     * 
+     * @return string Nom de l'icône à afficher
      */
     public function icon(): string
     {
@@ -32,7 +40,9 @@ enum FileType: string
     }
 
     /**
-     * Get file type MIME type.
+     * Récupère le type MIME associé au type de fichier.
+     * 
+     * @return string Type MIME du fichier
      */
     public function mimeType(): string
     {
@@ -45,7 +55,9 @@ enum FileType: string
     }
 
     /**
-     * Get allowed extensions as string for validation.
+     * Récupère les extensions autorisées sous forme de chaîne pour la validation.
+     * 
+     * @return string Extensions séparées par des virgules (ex: "pdf,zip,doc,docx")
      */
     public static function allowedExtensions(): string
     {

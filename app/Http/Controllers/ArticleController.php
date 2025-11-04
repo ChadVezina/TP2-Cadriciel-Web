@@ -10,17 +10,28 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Contrôleur ArticleController
+ * 
+ * Gère les opérations CRUD pour les articles avec support multilingue.
+ * Utilise les politiques d'autorisation pour contrôler l'accès aux articles.
+ */
 class ArticleController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Crée une nouvelle instance du contrôleur.
+     * 
+     * @param ArticleService $articleService Service gérant la logique métier des articles
      */
     public function __construct(protected ArticleService $articleService)
     {
     }
 
     /**
-     * Display a listing of the resource.
+     * Affiche la liste paginée des articles.
+     * 
+     * @param Request $request Requête HTTP
+     * @return View Vue de la liste des articles
      */
     public function index(Request $request): View
     {
@@ -32,7 +43,9 @@ class ArticleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Affiche le formulaire de création d'un nouvel article.
+     * 
+     * @return View Vue du formulaire de création
      */
     public function create(): View
     {
@@ -42,7 +55,10 @@ class ArticleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistre un nouvel article dans la base de données.
+     * 
+     * @param StoreArticleRequest $request Requête validée contenant les données de l'article
+     * @return RedirectResponse Redirection vers la liste des articles avec message de succès
      */
     public function store(StoreArticleRequest $request): RedirectResponse
     {
@@ -56,7 +72,11 @@ class ArticleController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Affiche un article spécifique.
+     * 
+     * @param Request $request Requête HTTP
+     * @param Article $article Article à afficher
+     * @return View Vue de détails de l'article
      */
     public function show(Request $request, Article $article): View
     {
@@ -68,7 +88,10 @@ class ArticleController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Affiche le formulaire de modification d'un article.
+     * 
+     * @param Article $article Article à modifier
+     * @return View Vue du formulaire de modification
      */
     public function edit(Article $article): View
     {
@@ -79,7 +102,11 @@ class ArticleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour un article existant dans la base de données.
+     * 
+     * @param UpdateArticleRequest $request Requête validée contenant les nouvelles données
+     * @param Article $article Article à mettre à jour
+     * @return RedirectResponse Redirection vers la liste des articles avec message de succès
      */
     public function update(UpdateArticleRequest $request, Article $article): RedirectResponse
     {
@@ -93,7 +120,10 @@ class ArticleController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime un article de la base de données.
+     * 
+     * @param Article $article Article à supprimer
+     * @return RedirectResponse Redirection vers la liste des articles avec message de succès
      */
     public function destroy(Article $article): RedirectResponse
     {
@@ -107,7 +137,13 @@ class ArticleController extends Controller
     }
 
     /**
-     * Change the view locale for articles (independent from app locale).
+     * Change la langue d'affichage des articles (indépendante de la locale de l'application).
+     * 
+     * Permet de visualiser les articles dans une langue différente de la langue de l'interface.
+     * 
+     * @param Request $request Requête HTTP
+     * @param string $locale Nouvelle langue d'affichage (fr ou en)
+     * @return RedirectResponse Redirection vers la page précédente
      */
     public function changeViewLocale(Request $request, string $locale): RedirectResponse
     {

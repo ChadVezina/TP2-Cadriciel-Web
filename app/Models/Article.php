@@ -7,12 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Modèle Article
+ * 
+ * Représente un article de blog avec support multilingue.
+ * Chaque article possède une langue principale et peut avoir des traductions
+ * dans d'autres langues via la relation translations.
+ * 
+ * @property int $id Identifiant unique de l'article
+ * @property string $title Titre de l'article dans sa langue principale
+ * @property string $content Contenu de l'article dans sa langue principale
+ * @property string $language Langue principale de l'article (fr ou en)
+ * @property int $user_id Identifiant de l'utilisateur auteur
+ * @property \Illuminate\Support\Carbon $created_at Date de création
+ * @property \Illuminate\Support\Carbon $updated_at Date de dernière modification
+ * 
+ * @property-read User $user Utilisateur auteur de l'article
+ * @property-read \Illuminate\Database\Eloquent\Collection|ArticleTranslation[] $translations Traductions de l'article
+ * @property-read string $excerpt Extrait du contenu de l'article
+ */
 class Article extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs qui peuvent être assignés en masse.
      *
      * @var array<int, string>
      */
@@ -24,7 +43,7 @@ class Article extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Récupère les attributs qui doivent être castés.
      *
      * @return array<string, string>
      */
@@ -37,7 +56,9 @@ class Article extends Model
     }
 
     /**
-     * Get the user that owns the article.
+     * Récupère l'utilisateur qui possède l'article.
+     *
+     * @return BelongsTo Relation BelongsTo vers le modèle User
      */
     public function user(): BelongsTo
     {
@@ -45,7 +66,9 @@ class Article extends Model
     }
 
     /**
-     * Get the translations for the article.
+     * Récupère les traductions de l'article.
+     *
+     * @return HasMany Collection de traductions de l'article
      */
     public function translations(): HasMany
     {
@@ -53,7 +76,11 @@ class Article extends Model
     }
 
     /**
-     * Scope a query to only include articles by a specific user.
+     * Limite la requête aux articles d'un utilisateur spécifique.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param int $userId Identifiant de l'utilisateur
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeByUser($query, int $userId)
     {
@@ -61,7 +88,11 @@ class Article extends Model
     }
 
     /**
-     * Scope a query to only include articles in a specific language.
+     * Limite la requête aux articles dans une langue spécifique.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param string $language Code de la langue (fr ou en)
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeInLanguage($query, string $language)
     {
@@ -69,7 +100,11 @@ class Article extends Model
     }
 
     /**
-     * Scope a query to search articles by title or content.
+     * Recherche les articles par titre ou contenu.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param string|null $search Terme de recherche
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch($query, ?string $search)
     {
@@ -84,7 +119,10 @@ class Article extends Model
     }
 
     /**
-     * Get translation for specific locale.
+     * Récupère la traduction pour une locale spécifique.
+     *
+     * @param string $locale Code de la locale (fr ou en)
+     * @return ArticleTranslation|null Traduction de l'article ou null si non trouvée
      */
     public function getTranslation(string $locale): ?ArticleTranslation
     {
@@ -92,7 +130,10 @@ class Article extends Model
     }
 
     /**
-     * Get title in specific language.
+     * Récupère le titre dans une langue spécifique.
+     *
+     * @param string $locale Code de la locale (fr ou en)
+     * @return string Titre traduit ou titre original si pas de traduction
      */
     public function getTitleIn(string $locale): string
     {
@@ -101,7 +142,10 @@ class Article extends Model
     }
 
     /**
-     * Get content in specific language.
+     * Récupère le contenu dans une langue spécifique.
+     *
+     * @param string $locale Code de la locale (fr ou en)
+     * @return string Contenu traduit ou contenu original si pas de traduction
      */
     public function getContentIn(string $locale): string
     {
@@ -110,7 +154,10 @@ class Article extends Model
     }
 
     /**
-     * Check if translation exists for locale.
+     * Vérifie si une traduction existe pour une locale donnée.
+     *
+     * @param string $locale Code de la locale (fr ou en)
+     * @return bool True si la traduction existe
      */
     public function hasTranslation(string $locale): bool
     {
@@ -118,7 +165,12 @@ class Article extends Model
     }
 
     /**
-     * Check if article has complete translations.
+     * Vérifie si l'article possède des traductions complètes.
+     *
+     * Un article est considéré comme complètement traduit s'il possède
+     * des traductions en français et en anglais sans marqueurs de traduction manquante.
+     *
+     * @return bool True si l'article est complètement traduit
      */
     public function isFullyTranslated(): bool
     {
@@ -134,7 +186,10 @@ class Article extends Model
     }
 
     /**
-     * Get the article's excerpt.
+     * Récupère un extrait de l'article.
+     * 
+     * @param int|null $length Longueur maximale de l'extrait (150 caractères par défaut)
+     * @return string Extrait du contenu de l'article
      */
     public function getExcerptAttribute(?int $length = 150): string
     {

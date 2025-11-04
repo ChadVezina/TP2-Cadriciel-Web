@@ -10,17 +10,27 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+/**
+ * Contrôleur DocumentController
+ * 
+ * Gère les opérations CRUD pour les documents avec téléchargement de fichiers
+ * et support multilingue pour les titres.
+ */
 class DocumentController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Crée une nouvelle instance du contrôleur.
+     * 
+     * @param DocumentService $documentService Service gérant la logique métier des documents
      */
     public function __construct(protected DocumentService $documentService)
     {
     }
 
     /**
-     * Display a listing of the documents with pagination.
+     * Affiche la liste paginée des documents.
+     * 
+     * @return View Vue de la liste des documents
      */
     public function index(): View
     {
@@ -32,7 +42,9 @@ class DocumentController extends Controller
     }
 
     /**
-     * Show the form for creating a new document.
+     * Affiche le formulaire de création d'un nouveau document.
+     * 
+     * @return View Vue du formulaire de création
      */
     public function create(): View
     {
@@ -42,7 +54,10 @@ class DocumentController extends Controller
     }
 
     /**
-     * Store a newly created document in storage.
+     * Enregistre un nouveau document avec fichier dans la base de données.
+     * 
+     * @param StoreDocumentRequest $request Requête validée contenant les données et le fichier
+     * @return RedirectResponse Redirection vers la liste des documents avec message de succès
      */
     public function store(StoreDocumentRequest $request): RedirectResponse
     {
@@ -60,7 +75,10 @@ class DocumentController extends Controller
     }
 
     /**
-     * Download the specified document.
+     * Télécharge le fichier d'un document spécifique.
+     * 
+     * @param Document $document Document à télécharger
+     * @return BinaryFileResponse Réponse binaire contenant le fichier
      */
     public function show(Document $document): BinaryFileResponse
     {
@@ -74,7 +92,10 @@ class DocumentController extends Controller
     }
 
     /**
-     * Show the form for editing the specified document.
+     * Affiche le formulaire de modification d'un document.
+     * 
+     * @param Document $document Document à modifier
+     * @return View Vue du formulaire de modification
      */
     public function edit(Document $document): View
     {
@@ -86,7 +107,11 @@ class DocumentController extends Controller
     }
 
     /**
-     * Update the specified document in storage.
+     * Met à jour un document existant et optionnellement son fichier.
+     * 
+     * @param UpdateDocumentRequest $request Requête validée contenant les nouvelles données
+     * @param Document $document Document à mettre à jour
+     * @return RedirectResponse Redirection vers la liste des documents avec message de succès
      */
     public function update(UpdateDocumentRequest $request, Document $document): RedirectResponse
     {
@@ -104,7 +129,10 @@ class DocumentController extends Controller
     }
 
     /**
-     * Remove the specified document from storage.
+     * Supprime un document et son fichier de la base de données et du stockage.
+     * 
+     * @param Document $document Document à supprimer
+     * @return RedirectResponse Redirection vers la liste des documents avec message de succès
      */
     public function destroy(Document $document): RedirectResponse
     {

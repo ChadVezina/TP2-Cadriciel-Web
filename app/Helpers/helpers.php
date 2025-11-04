@@ -1,8 +1,20 @@
 <?php
 
+/**
+ * Fichier de fonctions utilitaires globales
+ * 
+ * Ce fichier contient des fonctions helpers utilisées à travers l'application
+ * pour simplifier les tâches courantes comme le formatage de dates, la gestion
+ * des autorisations, et l'affichage de messages.
+ */
+
 if (!function_exists('format_date')) {
     /**
-     * Format a date using the application's default format.
+     * Formate une date selon le format par défaut de l'application.
+     * 
+     * @param mixed $date Date à formater (chaîne, Carbon, ou DateTime)
+     * @param string|null $format Format personnalisé optionnel (défaut: d/m/Y)
+     * @return string Date formatée
      */
     function format_date($date, ?string $format = null): string
     {
@@ -18,7 +30,11 @@ if (!function_exists('format_date')) {
 
 if (!function_exists('format_datetime')) {
     /**
-     * Format a datetime using the application's default format.
+     * Formate une date et heure selon le format par défaut de l'application.
+     * 
+     * @param mixed $datetime Date et heure à formater (chaîne, Carbon, ou DateTime)
+     * @param string|null $format Format personnalisé optionnel (défaut: d/m/Y H:i)
+     * @return string Date et heure formatées
      */
     function format_datetime($datetime, ?string $format = null): string
     {
@@ -34,7 +50,13 @@ if (!function_exists('format_datetime')) {
 
 if (!function_exists('active_route')) {
     /**
-     * Check if the current route matches the given route name(s).
+     * Vérifie si la route actuelle correspond au(x) nom(s) de route donné(s).
+     * 
+     * Utile pour ajouter une classe CSS aux liens de navigation actifs.
+     * 
+     * @param string|array $routes Nom(s) de route à vérifier
+     * @param string $class Classe CSS à retourner si la route correspond (défaut: 'active')
+     * @return string Classe CSS si la route correspond, chaîne vide sinon
      */
     function active_route($routes, string $class = 'active'): string
     {
@@ -52,7 +74,11 @@ if (!function_exists('active_route')) {
 
 if (!function_exists('flash')) {
     /**
-     * Flash a message to the session.
+     * Enregistre un message flash dans la session.
+     * 
+     * @param string $message Message à afficher
+     * @param string $type Type de message (success, error, warning, info)
+     * @return void
      */
     function flash(string $message, string $type = 'success'): void
     {
@@ -63,7 +89,10 @@ if (!function_exists('flash')) {
 
 if (!function_exists('page_title')) {
     /**
-     * Generate a page title with the application name.
+     * Génère un titre de page avec le nom de l'application.
+     * 
+     * @param string|null $title Titre de la page (optionnel)
+     * @return string Titre complet de la page
      */
     function page_title(?string $title = null): string
     {
@@ -75,7 +104,11 @@ if (!function_exists('page_title')) {
 
 if (!function_exists('user_can')) {
     /**
-     * Check if the authenticated user can perform an action on a model.
+     * Vérifie si l'utilisateur authentifié peut effectuer une action sur un modèle.
+     * 
+     * @param string $ability Nom de l'autorisation à vérifier
+     * @param mixed $model Modèle sur lequel vérifier l'autorisation (optionnel)
+     * @return bool True si l'utilisateur a l'autorisation
      */
     function user_can(string $ability, $model = null): bool
     {
@@ -89,7 +122,11 @@ if (!function_exists('user_can')) {
 
 if (!function_exists('user_cannot')) {
     /**
-     * Check if the authenticated user cannot perform an action on a model.
+     * Vérifie si l'utilisateur authentifié ne peut pas effectuer une action sur un modèle.
+     * 
+     * @param string $ability Nom de l'autorisation à vérifier
+     * @param mixed $model Modèle sur lequel vérifier l'autorisation (optionnel)
+     * @return bool True si l'utilisateur n'a pas l'autorisation
      */
     function user_cannot(string $ability, $model = null): bool
     {
@@ -99,7 +136,13 @@ if (!function_exists('user_cannot')) {
 
 if (!function_exists('file_size_format')) {
     /**
-     * Format a file size in bytes to a human-readable format.
+     * Formate une taille de fichier en octets vers un format lisible.
+     * 
+     * Convertit les octets en unités appropriées (B, KB, MB, GB, TB).
+     * 
+     * @param int $bytes Taille en octets
+     * @param int $decimals Nombre de décimales (défaut: 2)
+     * @return string Taille formatée avec unité
      */
     function file_size_format(int $bytes, int $decimals = 2): string
     {
@@ -113,7 +156,13 @@ if (!function_exists('file_size_format')) {
 
 if (!function_exists('avatar_url')) {
     /**
-     * Generate a Gravatar URL for the given email.
+     * Génère une URL Gravatar pour l'adresse courriel donnée.
+     * 
+     * Utilise le service Gravatar pour récupérer l'avatar associé à un courriel.
+     * 
+     * @param string $email Adresse courriel
+     * @param int $size Taille de l'avatar en pixels (défaut: 200)
+     * @return string URL de l'avatar Gravatar
      */
     function avatar_url(string $email, int $size = 200): string
     {
@@ -125,7 +174,14 @@ if (!function_exists('avatar_url')) {
 
 if (!function_exists('truncate_text')) {
     /**
-     * Truncate text to a specified length.
+     * Tronque un texte à une longueur spécifiée.
+     * 
+     * Ajoute un suffixe (par défaut '...') si le texte est tronqué.
+     * 
+     * @param string $text Texte à tronquer
+     * @param int $length Longueur maximale (défaut: 100)
+     * @param string $suffix Suffixe à ajouter si tronqué (défaut: '...')
+     * @return string Texte tronqué
      */
     function truncate_text(string $text, int $length = 100, string $suffix = '...'): string
     {

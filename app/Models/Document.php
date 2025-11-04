@@ -8,12 +8,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Modèle Document
+ * 
+ * Représente un document téléchargé par un utilisateur avec support multilingue.
+ * Gère le stockage des fichiers et leurs métadonnées, ainsi que les traductions
+ * des titres dans différentes langues.
+ * 
+ * @property int $id Identifiant unique du document
+ * @property int $user_id Identifiant de l'utilisateur propriétaire
+ * @property string $filename Nom du fichier stocké sur le serveur
+ * @property string $original_filename Nom original du fichier téléchargé
+ * @property string $file_path Chemin relatif du fichier dans le stockage
+ * @property string $file_type Extension/type du fichier (pdf, zip, doc, docx)
+ * @property \Illuminate\Support\Carbon $created_at Date de création
+ * @property \Illuminate\Support\Carbon $updated_at Date de dernière modification
+ * 
+ * @property-read User $user Utilisateur propriétaire du document
+ * @property-read \Illuminate\Database\Eloquent\Collection|DocumentTranslation[] $translations Traductions du document
+ * @property-read string $file_size Taille du fichier formatée
+ * @property-read string $file_icon Icône représentant le type de fichier
+ */
 class Document extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs qui peuvent être assignés en masse.
      *
      * @var array<int, string>
      */
@@ -26,7 +47,7 @@ class Document extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Récupère les attributs qui doivent être castés.
      *
      * @return array<string, string>
      */
@@ -39,7 +60,9 @@ class Document extends Model
     }
 
     /**
-     * Get the user that owns the document.
+     * Récupère l'utilisateur qui possède le document.
+     * 
+     * @return BelongsTo Relation BelongsTo vers le modèle User
      */
     public function user(): BelongsTo
     {
@@ -47,7 +70,9 @@ class Document extends Model
     }
 
     /**
-     * Get the translations for the document.
+     * Récupère les traductions du document.
+     * 
+     * @return HasMany Collection de traductions du document
      */
     public function translations(): HasMany
     {
@@ -55,7 +80,11 @@ class Document extends Model
     }
 
     /**
-     * Scope a query to only include documents by a specific user.
+     * Limite la requête aux documents d'un utilisateur spécifique.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param int $userId Identifiant de l'utilisateur
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeByUser($query, int $userId)
     {
@@ -63,7 +92,11 @@ class Document extends Model
     }
 
     /**
-     * Scope a query to only include documents of a specific type.
+     * Limite la requête aux documents d'un type spécifique.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param string $type Type de fichier (pdf, zip, doc, docx)
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOfType($query, string $type)
     {
@@ -71,7 +104,10 @@ class Document extends Model
     }
 
     /**
-     * Get translation for a specific locale.
+     * Récupère la traduction pour une locale spécifique.
+     * 
+     * @param string $locale Code de la locale (fr ou en)
+     * @return DocumentTranslation|null Traduction du document ou null si non trouvée
      */
     public function getTranslation(string $locale): ?DocumentTranslation
     {
@@ -79,7 +115,10 @@ class Document extends Model
     }
 
     /**
-     * Get title in a specific language.
+     * Récupère le titre dans une langue spécifique.
+     * 
+     * @param string $locale Code de la locale (fr ou en)
+     * @return string Titre traduit ou nom de fichier original si pas de traduction
      */
     public function getTitleIn(string $locale): string
     {
@@ -88,7 +127,10 @@ class Document extends Model
     }
 
     /**
-     * Check if the user owns the document.
+     * Vérifie si l'utilisateur possède le document.
+     * 
+     * @param User $user Utilisateur à vérifier
+     * @return bool True si l'utilisateur est le propriétaire
      */
     public function isOwnedBy(User $user): bool
     {
@@ -96,7 +138,9 @@ class Document extends Model
     }
 
     /**
-     * Get the file URL.
+     * Récupère l'URL publique du fichier.
+     * 
+     * @return string URL du fichier
      */
     public function getFileUrl(): string
     {
@@ -104,7 +148,9 @@ class Document extends Model
     }
 
     /**
-     * Get the full file path.
+     * Récupère le chemin complet du fichier sur le serveur.
+     * 
+     * @return string Chemin absolu du fichier
      */
     public function getFilePath(): string
     {
@@ -112,7 +158,9 @@ class Document extends Model
     }
 
     /**
-     * Delete the file from storage.
+     * Supprime le fichier physique du stockage.
+     * 
+     * @return void
      */
     public function deleteFile(): void
     {
@@ -122,7 +170,9 @@ class Document extends Model
     }
 
     /**
-     * Get the human-readable file size.
+     * Récupère la taille du fichier formatée en format lisible.
+     * 
+     * @return string Taille formatée (ex: "1.5 MB")
      */
     public function getFileSizeAttribute(): string
     {
@@ -134,7 +184,9 @@ class Document extends Model
     }
 
     /**
-     * Get the file icon based on type.
+     * Récupère l'icône correspondant au type de fichier.
+     * 
+     * @return string Nom de l'icône à afficher
      */
     public function getFileIconAttribute(): string
     {

@@ -7,12 +7,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
+/**
+ * Modèle Etudiant
+ * 
+ * Représente un étudiant dans le système avec ses informations personnelles.
+ * Chaque étudiant est associé à une ville et à un compte utilisateur.
+ * 
+ * @property int $id Identifiant unique de l'étudiant
+ * @property string $name Nom complet de l'étudiant
+ * @property string $address Adresse de résidence
+ * @property string $phone Numéro de téléphone
+ * @property string $email Adresse courriel
+ * @property \Illuminate\Support\Carbon|null $birthdate Date de naissance
+ * @property int $city_id Identifiant de la ville
+ * @property int|null $user_id Identifiant du compte utilisateur associé
+ * @property \Illuminate\Support\Carbon $created_at Date de création
+ * @property \Illuminate\Support\Carbon $updated_at Date de dernière modification
+ * 
+ * @property-read Ville $city Ville de résidence de l'étudiant
+ * @property-read User|null $user Compte utilisateur associé
+ * @property-read string $full_name Nom complet de l'étudiant
+ * @property-read int|null $age Âge de l'étudiant calculé à partir de la date de naissance
+ */
 class Etudiant extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs qui peuvent être assignés en masse.
      *
      * @var array<int, string>
      */
@@ -25,8 +47,9 @@ class Etudiant extends Model
         'city_id',
         'user_id',
     ];
+
     /**
-     * The attributes that should be cast.
+     * Les attributs qui doivent être castés.
      *
      * @var array<string, string>
      */
@@ -37,7 +60,9 @@ class Etudiant extends Model
     ];
 
     /**
-     * Get the city that owns the student.
+     * Récupère la ville de résidence de l'étudiant.
+     * 
+     * @return BelongsTo Relation BelongsTo vers le modèle Ville
      */
     public function city(): BelongsTo
     {
@@ -45,7 +70,9 @@ class Etudiant extends Model
     }
 
     /**
-     * Get the user that owns the student profile.
+     * Récupère le compte utilisateur associé à l'étudiant.
+     * 
+     * @return BelongsTo Relation BelongsTo vers le modèle User
      */
     public function user(): BelongsTo
     {
@@ -53,7 +80,11 @@ class Etudiant extends Model
     }
 
     /**
-     * Scope a query to only include students from a specific city.
+     * Limite la requête aux étudiants d'une ville spécifique.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param int $cityId Identifiant de la ville
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFromCity($query, int $cityId)
     {
@@ -61,7 +92,11 @@ class Etudiant extends Model
     }
 
     /**
-     * Scope a query to search students by name, email, or phone.
+     * Recherche les étudiants par nom, courriel ou téléphone.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query Constructeur de requête
+     * @param string|null $search Terme de recherche
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSearch($query, ?string $search)
     {
@@ -77,7 +112,9 @@ class Etudiant extends Model
     }
 
     /**
-     * Get the student's full name.
+     * Récupère le nom complet de l'étudiant.
+     * 
+     * @return string Nom complet de l'étudiant
      */
     public function getFullNameAttribute(): string
     {
@@ -85,8 +122,12 @@ class Etudiant extends Model
     }
 
     /**
-     * Get the student's age based on birthdate.
-     * Get the student's age based on birthdate.
+     * Calcule l'âge de l'étudiant à partir de sa date de naissance.
+     * 
+     * Utilise Carbon pour calculer de manière fiable l'âge, que la date de naissance
+     * soit une chaîne ou une instance de Date.
+     * 
+     * @return int|null Âge de l'étudiant en années, ou null si pas de date de naissance
      */
     public function getAgeAttribute(): ?int
     {
@@ -94,7 +135,6 @@ class Etudiant extends Model
             return null;
         }
 
-        // Use Carbon to reliably compute the age whether birthdate is a string or a Date instance
         return Carbon::parse($this->birthdate)->age;
     }
 

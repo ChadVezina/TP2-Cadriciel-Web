@@ -1,64 +1,83 @@
-# Maisonneuve_e2496523 — Gestion des étudiants (Laravel + Blade, REST)
+# TP2 — Cadriciel Web (Laravel)
 
-Application Laravel pour collecter, afficher, créer, mettre à jour et supprimer des **étudiants** du Collège Maisonneuve, liée à une table **villes**. UI en Blade (Bootstrap), contrôleur RESTful, données initiales via seeders/factories. Pensée pour évoluer vers un réseau social étudiant.
+Résumé consolidé et guide d'utilisation en français. Ce dépôt contient une application Laravel structurée autour de plusieurs ressources (Étudiants, Articles, Documents, Utilisateurs) et des améliorations visant la maintenabilité : architecture services, Form Requests, Policies, localisation, upload sécurisé, et tests.
 
----
-
-## 🚀 Stack & prérequis
-
-- PHP ≥ 8.2, Composer ≥ 2.x  
-- Laravel 11.x  
-- MySQL
-- Node.js ≥ 18  
-- Navigateur moderne
+Ce README fournit un aperçu global, les fonctionnalités principales, les prérequis, les étapes d'installation et d'exécution, ainsi que des informations sur l'architecture et la contribution.
 
 ---
 
-## 📁 Structure (extrait)
+## 📝 Aperçu
 
-```
-app/
-  Http/Controllers/EtudiantController.php
-  Models/Etudiant.php
-  Models/Ville.php
-database/
-  factories/EtudiantFactory.php
-  migrations/*_create_villes_table.php
-  migrations/*_create_etudiants_table.php
-  seeders/DatabaseSeeder.php
-  seeders/EtudiantSeeder.php
-  seeders/VilleSeeder.php
-public/
-  css/style.css (optionnel)
-resources/
-  views/layout.blade.php
-  views/etudiants/index.blade.php
-  views/etudiants/create.blade.php
-  views/etudiants/edit.blade.php
-  views/etudiants/show.blade.php
-routes/
-  web.php
-```
+Application web Laravel (Blade + REST) pour gérer des entités métiers : étudiants, articles et documents. L'application inclut :
+
+- CRUD complet pour les ressources principales (Étudiants, Articles, Documents)
+- Authentification et gestion des utilisateurs
+- Autorisation via Policies
+- Uploads sécurisés (documents), gestion des types et validations
+- Internationalisation (fr/en) avec affichage selon locale
+- Architecture en couches (Controllers → Services → Models) pour la testabilité
+- Seeders & factories pour données de test
+- Tests unitaires et fonctionnels (PHPUnit / artisan test)
 
 ---
 
-## ⚙️ Installation & configuration
+## ⚙️ Stack & prérequis
+
+- PHP >= 8.2
+- Composer
+- Laravel 11/12 (selon configuration du projet)
+- MySQL / MariaDB (ou autre DB compatible)
+- Node.js (pour assets, Vite)
+- npm (ou pnpm)
+
+Vérifiez la version PHP et Composer avant d'installer.
+
+---
+
+## Structure importante
+
+Extraits de la structure du projet (emplacements clés) :
+
+- `app/Http/Controllers/` — Controllers RESTful
+- `app/Services/` — Logique métier regroupée dans des services réutilisables
+- `app/Models/` — Eloquent models (Etudiant, Ville, Article, Document, User, ...)
+- `app/Http/Requests/` — Form Requests pour validation
+- `app/Policies/` — Policies d'autorisation
+- `resources/views/` — Vues Blade
+- `database/migrations/`, `database/seeders/`, `database/factories/`
+- `routes/web.php` — routes web, `routes/api.php` (si présent) — API
+
+---
+
+## Installation (locale)
+
+1. Cloner le dépôt
 
 ```bash
-# 1) Cloner
-git clone <votre-repo.git>
-cd Maisonneuvee2496523
+git clone <repository-url>
+cd TP2_Laravel
+```
 
-# 2) Dépendances
+2. Installer dépendances PHP et JS
+
+```bash
 composer install
+npm install
+```
 
-# 3) Variables d'env
+3. Copier et configurer l'environnement
+
+```bash
 cp .env.example .env
+php artisan key:generate
 ```
 
-**.env (exemple MySQL)**
+Modifier les variables `DB_*` dans le `.env` pour pointer vers votre base de données locale.
+
+Exemple minimal `.env` pour MySQL :
+
 ```
-APP_NAME=name
+APP_NAME=TP2
 APP_ENV=local
 APP_KEY=base64:...
 APP_DEBUG=true
@@ -72,113 +91,106 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
----
-
-## 🗃️ Base de données
+4. Migrations & Seeders
 
 ```bash
-# Migrations
 php artisan migrate
-
-# Seed (15 villes + 100 étudiants)
-php artisan db:seed
-# ou
-php artisan db:seed --class=VilleSeeder
-php artisan db:seed --class=EtudiantSeeder
+php artisan db:seed        # (optionnel) charger données de test
+php artisan storage:link   # lier public/storage si nécessaire
 ```
 
-> Tables créées : **villes** (id, nom), **etudiants** (id, nom, adresse, telephone, email unique, date_naissance, ville_id FK).
+Quelques seeders/factories sont fournis pour peupler `villes`, `etudiants`, etc.
 
----
-
-## 🧱 Artisan (rappel des commandes clés)
+5. Compiler les assets
 
 ```bash
-# Projet (déjà fait côté auteur)
-laravel new Maisonneuve_e2496523
-
-# Modèles + migrations
-php artisan make:model Ville -m
-php artisan make:model Etudiant -m
-
-# Factory + seeders
-php artisan make:factory EtudiantFactory --model=Etudiant
-php artisan make:seeder VilleSeeder
-php artisan make:seeder EtudiantSeeder
-
-# Contrôleur REST
-php artisan make:controller EtudiantController --resource
-php artisan make:controller AuthController -r
-php artisan make:controller UserController -m User
+npm run dev      # développement
+npm run build    # production
 ```
 
----
-
-## 🧭 Routes & endpoints
-
-`routes/web.php`
-```php
-use App\Http\Controllers\EtudiantController;
-Route::resource('etudiants', EtudiantController::class);
-```
-
-| Verbe | URI                          | Action   | Contrôleur                     |
-|------:|------------------------------|----------|--------------------------------|
-| GET   | /etudiants                   | index    | EtudiantController@index       |
-| GET   | /etudiants/create            | create   | EtudiantController@create      |
-| POST  | /etudiants                   | store    | EtudiantController@store       |
-| GET   | /etudiants/{etudiant}        | show     | EtudiantController@show        |
-| GET   | /etudiants/{etudiant}/edit   | edit     | EtudiantController@edit        |
-| PUT   | /etudiants/{etudiant}        | update   | EtudiantController@update      |
-| DELETE| /etudiants/{etudiant}        | destroy  | EtudiantController@destroy     |
-
----
-
-## 🖥️ Lancer l’app
+6. Lancer le serveur
 
 ```bash
 php artisan serve
-# http://127.0.0.1:8000/etudiants
+# puis ouvrir http://127.0.0.1:8000
 ```
 
 ---
 
-## 🧩 Vues principales (Blade)
+## Fonctionnalités principales
 
-- `resources/views/layout.blade.php` — layout global (Bootstrap + nav)
-- `resources/views/etudiants/index.blade.php` — liste + actions Voir/Modifier/Supprimer
-- `resources/views/etudiants/create.blade.php` — formulaire de création (select des villes)
-- `resources/views/etudiants/edit.blade.php` — formulaire d’édition
-- `resources/views/etudiants/show.blade.php` — détails d’un étudiant
-
-> Les formulaires utilisent `@csrf`, validations côté serveur et retours d’erreurs (`$errors`).
-
----
-
-## ✅ Validation (store/update)
-
-- `nom` : required|string|max:255  
-- `adresse` : required|string|max:255  
-- `telephone` : required|string|max:50  
-- `email` : required|email|unique:etudiants,email *(update : unique sauf l’ID courant)*  
-- `date_naissance` : required|date  
-- `ville_id` : required|exists:villes,id
+- Gestion des étudiants : création, lecture, mise à jour, suppression, recherche, pagination. Association avec une `ville`.
+- Gestion des articles : CRUD, traductions (ArticleTranslation), affichage selon locale, permissions.
+- Gestion des documents : upload sécurisé (PDF/ZIP/DOCX), téléchargement, validation des types et poids.
+- Authentification : inscription, login, logout, gestion des sessions.
+- Autorisation : Policies contrôlant qui peut modifier/supprimer une ressource.
+- Internationalisation : support FR/EN via fichiers JSON et traduction des entités.
+- Services : logique métier isolée dans `app/Services` pour testabilité.
+- API Resources : `app/Http/Resources` pour formatage des réponses JSON (si routes API présentes).
 
 ---
 
-## 🔗 Relations Eloquent
+## Architecture & bonnes pratiques
 
-- `Etudiant` **belongsTo** `Ville` (`ville_id`)  
-- `Ville` **hasMany** `Etudiant`
+- Pattern controller → service : les controllers orchestrent, les services effectuent la logique métier.
+- Form Requests pour validation et autorisation au niveau requête.
+- Policies pour autorisation (ownership, rôles, restrictions).
+- Models configurés avec `fillable`/`casts` et relations Eloquent.
+- Utilisation des factories/seeders pour tests et données de développement.
+
+Edge cases et validations courantes :
+
+- Vérifier unicité d'email avec exception pour update
+- Valider `ville_id` avec `exists:villes,id`
+- Validation stricte des uploads (mimetype + taille)
+- Traiter les utilisateurs orphelins lors de suppression (si applicable)
 
 ---
 
-## 🔒 Sécurité & bonnes pratiques
+## Commandes utiles
 
-- CSRF par défaut (forms Blade)  
-- Validation systématique des payloads  
-- Colonnes `fillable` définies sur les modèles (mass assignment safe)  
-- Email unique sur `etudiants.email`
+```bash
+# Migrations + seeders
+php artisan migrate
+php artisan db:seed
+
+# Lancer le serveur
+php artisan serve
+
+# Tests
+php artisan test
+
+# Clear cache
+php artisan cache:clear
+php artisan config:clear
+
+# Assets
+npm run dev
+npm run build
+```
 
 ---
 
+## Tests
+
+Le projet contient des tests unitaires et fonctionnels (dans `tests/`). Exécuter :
+
+```bash
+php artisan test
+```
+
+Ajoutez des tests pour les Services et Controllers lorsque vous modifiez la logique métier.
+
+---
+
+## Routes principales (exemples)
+
+Ressources exposées via routes RESTful (fichiers : `routes/web.php` et éventuellement `routes/api.php`) :
+
+- `Route::resource('etudiants', EtudiantController::class);`
+- `Route::resource('articles', ArticleController::class);`
+- `Route::resource('documents', DocumentController::class);`
+
+Consulter les controllers pour la liste complète des endpoints et middlewares associés (auth, throttle, etc.).
+
+---
